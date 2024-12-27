@@ -6,10 +6,11 @@ namespace Repository;
 public class UserRepository(MyAppContext context) 
     : Shared.Repository<User>(context), IUserRepository
 {
-    public async Task<User> GetUserWithOrders(int id)
+    public async Task<User> GetUserWithOrders(Guid reference)
     {
         return await context.Set<User>()
             .Include(u => u.Orders)
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .ThenInclude(o => o.Events)
+            .FirstOrDefaultAsync(u => u.Reference == reference);
     }
 }

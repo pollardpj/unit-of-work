@@ -3,4 +3,8 @@ using Shared;
 
 namespace Repository;
 
-public interface IOrderRepository : IRepository<Order>;
+public interface IOrderRepository : IRepository<Order>
+{
+    Task<Order> GetOrderWithEvents(Guid reference);
+    IAsyncEnumerable<Order> GetOrdersWithPendingEvents();
+}

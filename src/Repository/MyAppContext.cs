@@ -10,7 +10,19 @@ public class MyAppContext(DbContextOptions<MyAppContext> options) : DbContext(op
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().ToTable("User");
-        modelBuilder.Entity<Order>().ToTable("Order");
+        modelBuilder.Entity<User>()
+            .ToTable("User")
+            .HasIndex(u => u.Reference, "UX_User_Reference")
+                .IsUnique();
+        
+        modelBuilder.Entity<Order>()
+            .ToTable("Order")
+            .HasIndex(o => o.Reference, "UX_Order_Reference")
+                .IsUnique();
+        
+        modelBuilder.Entity<OrderEvent>()
+            .ToTable("OrderEvent")
+            .HasIndex(e => e.Reference, "UX_OrderEvent_Reference")
+                .IsUnique();
     }
 }

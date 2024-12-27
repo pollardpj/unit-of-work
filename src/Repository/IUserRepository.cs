@@ -5,5 +5,5 @@ namespace Repository;
 
 public interface IUserRepository : IRepository<User>
 {
-    Task<User> GetUserWithOrders(int id);
+    Task<User> GetUserWithOrders(Guid reference);
 }
