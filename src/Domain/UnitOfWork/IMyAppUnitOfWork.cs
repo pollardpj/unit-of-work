@@ -1,9 +1,9 @@
 ﻿using Shared;
 
-namespace Repository;
+namespace Domain.UnitOfWork;
 
 public interface IMyAppUnitOfWork : IUnitOfWork
 {
-    IUserRepository UserRepository { get; }
     IOrderRepository OrderRepository { get; }
+    IOrderEventRepository OrderEventRepository { get; }
 }

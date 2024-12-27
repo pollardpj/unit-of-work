@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Shared;
 
-namespace Repository;
+namespace Domain.UnitOfWork;
 
 public interface IOrderRepository : IRepository<Order>
 {

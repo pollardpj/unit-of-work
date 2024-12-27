@@ -1,5 +1,7 @@
-﻿using Domain.Entities;
+﻿using Domain;
+using Domain.Entities;
 using Domain.Enums;
+using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
