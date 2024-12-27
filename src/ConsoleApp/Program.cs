@@ -97,10 +97,10 @@ var myUserDto = new UserDto
 
 Console.WriteLine(JsonSerializer.Serialize(myUserDto));
 
-var ordersWithPendingEvents = unitOfWork.OrderRepository.GetOrdersWithPendingEvents();
+var orderReferences = unitOfWork.OrderRepository.GetOrderReferencesWithPendingEvents();
 
-await foreach (var orderWithPendingEvents in ordersWithPendingEvents)
+await foreach (var reference in orderReferences)
 {
-    Console.WriteLine($"Order {orderWithPendingEvents.Reference} has pending events.");
+    Console.WriteLine($"Order {reference} has pending events.");
 }
 

@@ -6,5 +6,5 @@ namespace Repository;
 public interface IOrderRepository : IRepository<Order>
 {
     Task<Order> GetOrderWithEvents(Guid reference);
-    IAsyncEnumerable<Order> GetOrdersWithPendingEvents();
+    IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents();
 }

@@ -14,11 +14,11 @@ public class OrderRepository(MyAppContext context)
             .FirstOrDefaultAsync(u => u.Reference == reference);
     }
 
-    public IAsyncEnumerable<Order> GetOrdersWithPendingEvents()
+    public IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents()
     {
         return context.Set<Order>()
             .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending))
-            .AsNoTracking()
+            .Select(o => o.Reference)
             .AsAsyncEnumerable();
     }
 }
