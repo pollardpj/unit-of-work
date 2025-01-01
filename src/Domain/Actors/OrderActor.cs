@@ -1,11 +1,11 @@
-using System.Text;
-using System.Text.Json;
 using Dapr.Actors.Runtime;
 using Dapr.Client;
 using Domain.Enums;
 using Domain.Events;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Logging;
+using System.Text;
+using System.Text.Json;
 
 namespace Domain.Actors;
 
@@ -22,8 +22,7 @@ public class OrderActor(
                 OrderReference = orderReference
             })), 
             TimeSpan.FromMilliseconds(1), 
-            TimeSpan.FromSeconds(1),
-            3);
+            TimeSpan.FromMilliseconds(-1));
     }
 
     public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
@@ -37,12 +36,20 @@ public class OrderActor(
         foreach (var orderEvent in orderEvents)
         {
             var payload = JsonSerializer.Deserialize<OrderEventPayload>(orderEvent.Payload);
-            
-            await client.PublishEventAsync("order-pubsub", "order-event", payload);
 
-            orderEvent.Status = EventStatus.Published;
-            unitOfWork.OrderEventRepository.Update(orderEvent);
-            await unitOfWork.FlushAsync();
+            try
+            {
+                await client.PublishEventAsync("order-pubsub", "order-event", payload);
+
+                orderEvent.Status = EventStatus.Published;
+                unitOfWork.OrderEventRepository.Update(orderEvent);
+                await unitOfWork.FlushAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error on publishing event for order with reference {OrderReference}", data.OrderReference);
+                throw;
+            }
         }
     }
 

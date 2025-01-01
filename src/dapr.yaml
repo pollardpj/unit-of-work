@@ -1,0 +1,9 @@
+
+version: 1
+common:
+  resourcesPath: ../resources/
+apps:
+  - appID: myapp-api
+    appDirPath: ./MyAppAPI/
+    appPort: 5183
+    command: ["dotnet", "run"]

@@ -12,30 +12,37 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddActors(options =>
-//{
-//    options.Actors.RegisterActor<OrderActor>();
-
-//    options.ReentrancyConfig = new ActorReentrancyConfig
-//    {
-//        Enabled = false
-//    };
-//});
-
 builder.Services.AddDbContext<MyAppContext>(options =>
     options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=myapp"));
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderEventRepository, OrderEventRepository>();
 builder.Services.AddScoped<IMyAppUnitOfWork, MyAppUnitOfWork>();
+
+builder.Services.AddActors(options =>
+{
+    options.Actors.RegisterActor<OrderActor>();
+
+    options.ReentrancyConfig = new ActorReentrancyConfig
+    {
+        Enabled = false
+    };
+});
 
 var app = builder.Build();
 
-app.MapPost("/order", 
+// Dapr will send serialized event object vs. being raw CloudEvent
+app.UseCloudEvents();
+
+app.MapPost("/api/order", 
     async (
         OrderRequest request, 
         IMyAppUnitOfWork unitOfWork,
         ILogger<Program> logger) =>
 {
+    
+    #region Update Database
+
     var order = new Order
     {
         Reference = request.Reference,
@@ -61,21 +68,29 @@ app.MapPost("/order",
 
     await unitOfWork.FlushAsync();
 
-    //try
-    //{
-    //    var actorId = new ActorId($"order-{request.Reference}");
-    //    var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
-    //    await proxy.PublishEvents(request.Reference);
-    //}
-    //catch (Exception e)
-    //{
-    //    logger.LogError(e, e.Message);
-    //}
+    #endregion
+
+    #region Publish Event
+
+    try
+    {
+        var actorId = new ActorId($"order-{request.Reference}");
+        var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
+        await proxy.PublishEvents(request.Reference);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, ex.Message);
+    }
+
+    #endregion
 
     return Results.Ok(new
     {
-        OrderId = order.Id
+        OrderReference = order.Reference
     });
 });
+
+app.MapActorsHandlers();
 
 app.Run();
