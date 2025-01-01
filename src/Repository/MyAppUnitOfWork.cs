@@ -1,12 +1,14 @@
 ﻿using Domain.UnitOfWork;
-using Microsoft.Extensions.DependencyInjection;
 using Shared;
 
 namespace Repository;
 
-public class MyAppUnitOfWork(MyAppContext context, IServiceProvider serviceProvider) 
-    : UnitOfWork(context, serviceProvider), IMyAppUnitOfWork
+public class MyAppUnitOfWork(
+    MyAppContext context, 
+    IOrderRepository orderRepository,
+    IOrderEventRepository orderEventRepository) 
+    : UnitOfWork(context), IMyAppUnitOfWork
 {
-    public IOrderRepository OrderRepository => ServiceProvider.GetService<IOrderRepository>();
-    public IOrderEventRepository OrderEventRepository => ServiceProvider.GetService<IOrderEventRepository>();
+    public IOrderRepository OrderRepository => orderRepository;
+    public IOrderEventRepository OrderEventRepository => orderEventRepository;
 }

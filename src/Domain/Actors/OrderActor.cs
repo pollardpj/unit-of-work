@@ -11,7 +11,7 @@ namespace Domain.Actors;
 
 public class OrderActor(
     ActorHost host,
-    IMyAppUnitOfWork unitOfWork,
+    IMyAppUnitOfWorkFactory unitOfWorkFactory,
     ILogger<OrderActor> logger) : Actor(host), IOrderActor, IRemindable
 {
     public async Task PublishEvents(Guid orderReference)
@@ -28,11 +28,12 @@ public class OrderActor(
     public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
     {
         var data = JsonSerializer.Deserialize<PublishEventsReminderData>(state);
-        
+
+        using var client = new DaprClientBuilder().Build();
+        using var unitOfWork = unitOfWorkFactory.Create();
+
         var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderReference);
         
-        using var client = new DaprClientBuilder().Build();
-
         foreach (var orderEvent in orderEvents)
         {
             var payload = JsonSerializer.Deserialize<OrderEventPayload>(orderEvent.Payload);
@@ -48,7 +49,6 @@ public class OrderActor(
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Error on publishing event for order with reference {OrderReference}", data.OrderReference);
-                throw;
             }
         }
     }

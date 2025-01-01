@@ -5,23 +5,22 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Events;
 using Domain.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 using MyAppAPI.Models;
 using Repository;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<MyAppContext>(options =>
-    options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=myapp"));
-
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IOrderEventRepository, OrderEventRepository>();
-builder.Services.AddScoped<IMyAppUnitOfWork, MyAppUnitOfWork>();
+builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
+{
+    return new MyAppUnitOfWorkFactory("Server=(localdb)\\MSSQLLocalDB;Database=myapp");
+});
 
 builder.Services.AddActors(options =>
 {
     options.Actors.RegisterActor<OrderActor>();
+
+    options.ActorIdleTimeout = TimeSpan.FromSeconds(5);
 
     options.ReentrancyConfig = new ActorReentrancyConfig
     {
@@ -37,10 +36,9 @@ app.UseCloudEvents();
 app.MapPost("/api/order", 
     async (
         OrderRequest request, 
-        IMyAppUnitOfWork unitOfWork,
+        IMyAppUnitOfWorkFactory unitOfWorkFactory,
         ILogger<Program> logger) =>
 {
-    
     #region Update Database
 
     var order = new Order
@@ -59,14 +57,17 @@ app.MapPost("/api/order",
         Payload = JsonSerializer.Serialize(new OrderEventPayload
         {
             Reference = order.Reference,
+            Type = OrderEventType.Created,
             ProductName = order.ProductName,
             Price = order.Price
         })
     });
-    
-    unitOfWork.OrderRepository.Add(order);
 
-    await unitOfWork.FlushAsync();
+    using (var unitOfWork = unitOfWorkFactory.Create())
+    {
+        unitOfWork.OrderRepository.Add(order);
+        await unitOfWork.FlushAsync();
+    }
 
     #endregion
 

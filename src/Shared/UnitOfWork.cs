@@ -2,9 +2,8 @@
 
 namespace Shared;
 
-public class UnitOfWork(DbContext context, IServiceProvider serviceProvider) : IUnitOfWork
+public class UnitOfWork(DbContext context) : IUnitOfWork
 {
-    protected IServiceProvider ServiceProvider { get; } = serviceProvider;
     private bool _disposed;
 
     public async Task<int> FlushAsync(CancellationToken cancellationToken = default)
@@ -33,5 +32,7 @@ public class UnitOfWork(DbContext context, IServiceProvider serviceProvider) : I
     public async ValueTask DisposeAsync()
     {
         if (context != null) await context.DisposeAsync();
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 }
