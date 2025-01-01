@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "src\Repository\Repository.csproj", "{753736C1-FCF9-4B56-B6E4-D3909C9EF32F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Shared\Shared.csproj", "{24632CDA-2213-48C8-ACB3-F78A081D7753}"
@@ -9,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "src\ConsoleApp\ConsoleApp.csproj", "{B368C911-DFC8-4768-B6FA-4A9532132D87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyAppAPI", "MyAppAPI\MyAppAPI.csproj", "{CD80DAE0-082B-4047-B754-B264881C4C0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{E5AADD93-D2A4-49DC-885A-FD36B9AC787B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logic", "Logic", "{4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +43,14 @@ Global
 		{CD80DAE0-082B-4047-B754-B264881C4C0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD80DAE0-082B-4047-B754-B264881C4C0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD80DAE0-082B-4047-B754-B264881C4C0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{753736C1-FCF9-4B56-B6E4-D3909C9EF32F} = {4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}
+		{88159D84-19A2-4A65-BA96-41FA7EA815A5} = {4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}
+		{B368C911-DFC8-4768-B6FA-4A9532132D87} = {E5AADD93-D2A4-49DC-885A-FD36B9AC787B}
+		{CD80DAE0-082B-4047-B754-B264881C4C0B} = {E5AADD93-D2A4-49DC-885A-FD36B9AC787B}
 	EndGlobalSection
 EndGlobal
