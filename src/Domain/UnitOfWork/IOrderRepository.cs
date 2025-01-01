@@ -1,10 +1,10 @@
 ﻿using Domain.Entities;
-using Shared;
+using Shared.Repository;
 
 namespace Domain.UnitOfWork;
 
 public interface IOrderRepository : IRepository<Order>
 {
-    Task<Order> GetOrderWithEvents(Guid reference);
+    ValueTask<Order> GetOrderWithEvents(Guid reference);
     IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents();
 }

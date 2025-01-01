@@ -1,9 +1,9 @@
 ﻿using Domain.Entities;
-using Shared;
+using Shared.Repository;
 
 namespace Domain.UnitOfWork;
 
 public interface IOrderEventRepository : IRepository<OrderEvent>
 {
-    Task<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference);
+    ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference);
 }

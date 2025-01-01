@@ -1,13 +1,12 @@
 using Dapr.Actors;
-using Dapr.Actors.Client;
 using Domain.Actors;
-using Domain.Entities;
-using Domain.Enums;
-using Domain.Events;
+using Domain.Commands;
+using Domain.Commands.Handlers;
+using Domain.Services;
 using Domain.UnitOfWork;
 using MyAppAPI.Models;
 using Repository;
-using System.Text.Json;
+using Shared.CQRS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +14,9 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 {
     return new MyAppUnitOfWorkFactory("Server=(localdb)\\MSSQLLocalDB;Database=myapp");
 });
+
+builder.Services.AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
+builder.Services.AddScoped<IOrderEventsService, OrderEventsService>();
 
 builder.Services.AddActors(options =>
 {
@@ -34,61 +36,20 @@ var app = builder.Build();
 app.UseCloudEvents();
 
 app.MapPost("/api/order", 
-    async (
-        OrderRequest request, 
-        IMyAppUnitOfWorkFactory unitOfWorkFactory,
-        ILogger<Program> logger) =>
+    async (OrderRequest request, ICommandHandler<CreateOrder> createOrderHandler) =>
 {
-    #region Update Database
-
-    var order = new Order
+    var command = new CreateOrder
     {
         Reference = request.Reference,
-        ProductName = request.ProductName,
-        Price = 1.99M
+        ProductName = request.ProductName
     };
 
-    order.Events.Add(new OrderEvent
-    {
-        Reference = order.Reference,
-        CreatedTimestampUtc = DateTime.UtcNow,
-        Status = EventStatus.Pending,
-        Type = OrderEventType.Created,
-        Payload = JsonSerializer.Serialize(new OrderEventPayload
-        {
-            Reference = order.Reference,
-            Type = OrderEventType.Created,
-            ProductName = order.ProductName,
-            Price = order.Price
-        })
-    });
-
-    using (var unitOfWork = unitOfWorkFactory.Create())
-    {
-        unitOfWork.OrderRepository.Add(order);
-        await unitOfWork.FlushAsync();
-    }
-
-    #endregion
-
-    #region Publish Event
-
-    try
-    {
-        var actorId = new ActorId($"order-{request.Reference}");
-        var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
-        await proxy.PublishEvents(request.Reference);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, ex.Message);
-    }
-
-    #endregion
+    await createOrderHandler.ExecuteAsync(command);
 
     return Results.Ok(new
     {
-        OrderReference = order.Reference
+        OrderReference = request.Reference,
+        OrderPrice = command.Price
     });
 });
 

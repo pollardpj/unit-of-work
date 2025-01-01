@@ -2,13 +2,14 @@
 using Domain.Enums;
 using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Shared.Repository;
 
 namespace Repository;
 
 public class OrderRepository(MyAppContext context) 
-    : Shared.Repository<Order>(context), IOrderRepository
+    : Repository<Order>(context), IOrderRepository
 {
-    public async Task<Order> GetOrderWithEvents(Guid reference)
+    public async ValueTask<Order> GetOrderWithEvents(Guid reference)
     {
         return await context.Set<Order>()
             .Include(u => u.Events)

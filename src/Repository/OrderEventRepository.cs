@@ -2,14 +2,14 @@
 using Domain.Enums;
 using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Repository;
 
 namespace Repository;
 
 public class OrderEventRepository(MyAppContext context) 
     : Repository<OrderEvent>(context), IOrderEventRepository
 {
-    public async Task<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference)
+    public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference)
     {
         return await context.Set<Order>()
             .Where(o => o.Reference == orderReference)

@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Shared;
+namespace Shared.Repository;
 
 public class UnitOfWork(DbContext context) : IUnitOfWork
 {
     private bool _disposed;
 
-    public async Task<int> FlushAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<int> FlushAsync(CancellationToken cancellationToken = default)
     {
         return await context.SaveChangesAsync(cancellationToken);
     }
