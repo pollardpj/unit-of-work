@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+		<PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
         <PackageReference Include="Dapr.Actors" Version="1.14.*-*" />
         <PackageReference Include="Dapr.AspNetCore" Version="1.14.*-*" />
         <PackageReference Include="Dapr.Actors.AspNetCore" Version="1.14.*-*" />

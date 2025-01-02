@@ -4,7 +4,9 @@ using Domain.Commands;
 using Domain.Commands.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
+using FluentValidation;
 using MyAppAPI.Models;
+using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
 
@@ -14,6 +16,8 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 {
     return new MyAppUnitOfWorkFactory("Server=(localdb)\\MSSQLLocalDB;Database=myapp");
 });
+
+builder.Services.AddScoped<IValidator<OrderRequest>, OrderRequestValidator>();
 
 builder.Services.AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
 builder.Services.AddScoped<IOrderEventsService, OrderEventsService>();
@@ -36,8 +40,18 @@ var app = builder.Build();
 app.UseCloudEvents();
 
 app.MapPost("/api/order", 
-    async (OrderRequest request, ICommandHandler<CreateOrder> createOrderHandler) =>
+    async (
+        OrderRequest request,
+        IValidator<OrderRequest> validator,
+        ICommandHandler <CreateOrder> createOrderHandler) =>
 {
+    var validationResult = await validator.ValidateAsync(request);
+
+    if (!validationResult.IsValid)
+    {
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
     var command = new CreateOrder
     {
         Reference = request.Reference,

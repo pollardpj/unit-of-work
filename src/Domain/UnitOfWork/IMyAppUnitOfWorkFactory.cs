@@ -1,5 +1,4 @@
-﻿using Domain.UnitOfWork;
-using Shared.Repository;
+﻿using Shared.Repository;
 
 namespace Domain.UnitOfWork;
 
