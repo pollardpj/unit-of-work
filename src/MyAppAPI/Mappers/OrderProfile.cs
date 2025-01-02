@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Domain.DTOs;
 using Domain.Entities;
+using Domain.Queries;
+using MyAppAPI.Models;
 
 namespace MyAppAPI.Mappers
 {
@@ -10,6 +12,8 @@ namespace MyAppAPI.Mappers
         {
             CreateMap<OrderEvent, OrderEventDto>();
             CreateMap<Order, OrderDto>();
+
+            CreateMap<GetOrdersRequest, GetOrders>();
         }
     }
 }

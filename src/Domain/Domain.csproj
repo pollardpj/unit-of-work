@@ -7,6 +7,7 @@
 
     <ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="Community.OData.Linq" Version="2.1.0" />
         <PackageReference Include="Dapr.Actors" Version="1.14.*-*" />
     </ItemGroup>
 

@@ -5,6 +5,9 @@ namespace Domain.Queries;
 
 public class GetOrders : IQuery<GetOrdersResult>
 {
+    public string Filter { get; set; }
+    public int Skip { get; set; }
+    public int Top { get; set; } = 10;
 }
 
 public class GetOrdersResult

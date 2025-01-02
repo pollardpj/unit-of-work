@@ -1,3 +1,4 @@
+using AutoMapper;
 using Dapr.Actors;
 using Domain.Actors;
 using Domain.Commands;
@@ -74,9 +75,13 @@ app.MapPost("/api/order",
 });
 
 app.MapGet("/api/orders",
-    async (IQueryHandler<GetOrders, GetOrdersResult> handler) =>
+    async (
+        [AsParameters] GetOrdersRequest request,
+        IQueryHandler<GetOrders, GetOrdersResult> handler,
+        IMapper mapper) =>
     {
-        return Results.Ok(await handler.ExecuteAsync(new GetOrders()));
+        return Results.Ok(
+            await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
     });
 
 app.MapActorsHandlers();
