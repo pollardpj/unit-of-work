@@ -16,6 +16,7 @@ public class OrderEventRepository(MyAppContext context)
             .SelectMany(o => o.Events
                 .Where(e => e.Status == EventStatus.Pending))
             .OrderBy(e => e.CreatedTimestampUtc)
+            .AsNoTracking()
             .ToListAsync();
     }
 }

@@ -8,7 +8,9 @@ using Shared.CQRS;
 
 namespace Domain.Queries.Handlers;
 
-public class GetOrdersHandler(IMyAppUnitOfWorkFactory unitOfWorkFactory, IMapper mapper) : IQueryHandler<GetOrders, GetOrdersResult>
+public class GetOrdersHandler(
+    IMyAppUnitOfWorkFactory unitOfWorkFactory, 
+    IMapper mapper) : IQueryHandler<GetOrders, GetOrdersResult>
 {
     public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query)
     {

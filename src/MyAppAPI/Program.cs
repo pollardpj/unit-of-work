@@ -12,6 +12,7 @@ using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
+using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,12 +26,17 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<IValidator<OrderRequest>, OrderRequestValidator>();
-builder.Services.AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>();
+builder.Services
+    .AddScoped<IValidator<OrderRequest>, OrderRequestValidator>()
+    .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
+    .AddFluentValidationAutoValidation();
 
-builder.Services.AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
-builder.Services.AddScoped<IOrderEventsService, OrderEventsService>();
-builder.Services.AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
+builder.Services
+    .AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>()
+    .AddScoped<IOrderEventsService, OrderEventsService>();
+
+builder.Services
+    .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
 
 builder.Services.AddActors(options =>
 {
@@ -52,45 +58,31 @@ app.UseCloudEvents();
 app.MapPost("/api/order", 
     async (
         OrderRequest request,
-        IValidator<OrderRequest> validator,
         ICommandHandler <CreateOrder> handler,
         IMapper mapper) =>
-{
-    var validationResult = await validator.ValidateAsync(request);
-
-    if (!validationResult.IsValid)
     {
-        return Results.ValidationProblem(validationResult.ToDictionary());
-    }
+        var command = mapper.Map<CreateOrder>(request);
 
-    var command = mapper.Map<CreateOrder>(request);
+        await handler.ExecuteAsync(command);
 
-    await handler.ExecuteAsync(command);
+        return Results.Ok(new
+        {
+            OrderReference = request.Reference,
+            OrderPrice = command.Price
+        });
 
-    return Results.Ok(new
-    {
-        OrderReference = request.Reference,
-        OrderPrice = command.Price
-    });
-});
+    }).AddFluentValidationAutoValidation();
 
 app.MapGet("/api/orders",
     async (
         [AsParameters] GetOrdersRequest request,
-        IValidator<GetOrdersRequest> validator,
         IQueryHandler<GetOrders, GetOrdersResult> handler,
         IMapper mapper) =>
     {
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-
         return Results.Ok(
             await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
-    });
+
+    }).AddFluentValidationAutoValidation();
 
 app.MapActorsHandlers();
 
