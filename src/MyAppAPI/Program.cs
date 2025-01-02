@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.Routing;
 using AutoMapper;
 using Dapr.Actors;
 using Domain.Actors;
@@ -22,6 +24,11 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
     return new MyAppUnitOfWorkFactory(
         "Server=(localdb)\\MSSQLLocalDB;Database=myapp", 
         sp.GetService<ILoggerFactory>());
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -52,13 +59,18 @@ builder.Services.AddActors(options =>
 
 var app = builder.Build();
 
+var versionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .HasApiVersion(new ApiVersion(2))
+    .Build();
+
 // Dapr will send serialized event object vs. being raw CloudEvent
 app.UseCloudEvents();
 
-app.MapPost("/api/order", 
+app.MapPost("/api/{version:apiVersion}/order",
     async (
         OrderRequest request,
-        ICommandHandler <CreateOrder> handler,
+        ICommandHandler<CreateOrder> handler,
         IMapper mapper) =>
     {
         var command = mapper.Map<CreateOrder>(request);
@@ -71,9 +83,12 @@ app.MapPost("/api/order",
             OrderPrice = command.Price
         });
 
-    }).AddFluentValidationAutoValidation();
+    })
+    .AddFluentValidationAutoValidation()
+    .WithApiVersionSet(versionSet)
+    .MapToApiVersion(1);
 
-app.MapGet("/api/orders",
+app.MapGet("/api/{version:apiVersion}/orders",
     async (
         [AsParameters] GetOrdersRequest request,
         IQueryHandler<GetOrders, GetOrdersResult> handler,
@@ -82,7 +97,10 @@ app.MapGet("/api/orders",
         return Results.Ok(
             await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
 
-    }).AddFluentValidationAutoValidation();
+    })
+    .AddFluentValidationAutoValidation()
+    .WithApiVersionSet(versionSet)
+    .MapToApiVersion(1);
 
 app.MapActorsHandlers();
 
