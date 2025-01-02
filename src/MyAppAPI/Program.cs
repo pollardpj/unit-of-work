@@ -1,10 +1,10 @@
 using Asp.Versioning;
-using Asp.Versioning.Routing;
 using AutoMapper;
 using Dapr.Actors;
 using Domain.Actors;
 using Domain.Commands;
 using Domain.Commands.Handlers;
+using Domain.Exceptions;
 using Domain.Queries;
 using Domain.Queries.Handlers;
 using Domain.Services;
@@ -29,6 +29,11 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 builder.Services.AddApiVersioning(options =>
 {
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
+
+builder.Services.Configure<RouteHandlerOptions>(options =>
+{
+    options.ThrowOnBadRequest = true;
 });
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -94,8 +99,15 @@ app.MapGet("/api/{version:apiVersion}/orders",
         IQueryHandler<GetOrders, GetOrdersResult> handler,
         IMapper mapper) =>
     {
-        return Results.Ok(
-            await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
+        try
+        {
+            return Results.Ok(
+                await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
+        }
+        catch (PagedQueryException ex)
+        {
+            return Results.BadRequest(ex.Details);
+        }
 
     })
     .AddFluentValidationAutoValidation()

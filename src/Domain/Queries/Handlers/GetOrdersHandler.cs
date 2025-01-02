@@ -2,8 +2,10 @@
 using AutoMapper.QueryableExtensions;
 using Community.OData.Linq;
 using Domain.DTOs;
+using Domain.Exceptions;
 using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OData;
 using Shared.CQRS;
 
 namespace Domain.Queries.Handlers;
@@ -18,32 +20,39 @@ public class GetOrdersHandler(
 
         var orders = unitOfWork.OrderRepository.GetAll();
 
-        if (!string.IsNullOrWhiteSpace(query.Filter))
+        try
         {
-            orders = orders.OData()
-                .Filter(query.Filter)
-                .ToOriginalQuery();
+            if (!string.IsNullOrWhiteSpace(query.Filter))
+            {
+                orders = orders.OData()
+                    .Filter(query.Filter)
+                    .ToOriginalQuery();
+            }
+
+            var totalCount = await orders.CountAsync();
+
+            if (!string.IsNullOrWhiteSpace(query.OrderBy))
+            {
+                orders = orders.OData()
+                    .OrderBy(query.OrderBy)
+                    .ToOriginalQuery();
+            }
+
+            var projectedOrders = orders
+                .Skip(query.Skip ?? 0)
+                .Take(query.Top ?? 100)
+                .AsNoTracking()
+                .ProjectTo<OrderDto>(mapper.ConfigurationProvider);
+
+            return new GetOrdersResult
+            {
+                TotalCount = totalCount,
+                Items = await projectedOrders.ToListAsync()
+            };
         }
-
-        var totalCount = await orders.CountAsync();
-
-        if (!string.IsNullOrWhiteSpace(query.OrderBy))
+        catch (ODataException ex)
         {
-            orders = orders.OData()
-                .OrderBy(query.OrderBy)
-                .ToOriginalQuery();
+            throw new PagedQueryException(ex.Message, ex);
         }
-
-        var projectedOrders = orders
-            .Skip(query.Skip ?? 0)
-            .Take(query.Top ?? 100)
-            .AsNoTracking()
-            .ProjectTo<OrderDto>(mapper.ConfigurationProvider);
-
-        return new GetOrdersResult
-        {
-            TotalCount = totalCount,
-            Items = await projectedOrders.ToListAsync()
-        };
     }
 }
