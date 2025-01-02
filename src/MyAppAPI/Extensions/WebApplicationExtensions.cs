@@ -30,7 +30,7 @@ public static class WebApplicationExtensions
 
         app.MapPost("/api/{version:apiVersion}/order",
             async (
-                OrderRequest request,
+                CreateOrderRequest request,
                 ICommandHandler<CreateOrder> handler,
                 IMapper mapper) =>
             {
@@ -40,7 +40,7 @@ public static class WebApplicationExtensions
 
                 return Results.Ok(new
                 {
-                    OrderReference = request.Reference,
+                    OrderReference = command.Reference,
                     OrderPrice = command.Price
                 });
 

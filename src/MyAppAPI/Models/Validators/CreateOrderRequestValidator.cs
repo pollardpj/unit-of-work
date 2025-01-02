@@ -2,9 +2,9 @@
 
 namespace MyAppAPI.Models.Validators;
 
-public class OrderRequestValidator : AbstractValidator<OrderRequest>
+public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
 {
-    public OrderRequestValidator()
+    public CreateOrderRequestValidator()
     {
         RuleFor(r => r.ProductName)
             .NotEmpty()

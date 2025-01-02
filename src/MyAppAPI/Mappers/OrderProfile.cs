@@ -11,7 +11,7 @@ namespace MyAppAPI.Mappers
     {
         public OrderProfile()
         {
-            CreateMap<OrderRequest, CreateOrder>();
+            CreateMap<CreateOrderRequest, CreateOrder>();
 
             CreateMap<OrderEvent, OrderEventDto>();
             CreateMap<Order, OrderDto>();

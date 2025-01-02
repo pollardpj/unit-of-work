@@ -1,6 +1,6 @@
 namespace MyAppAPI.Models;
 
-public class OrderRequest
+public class CreateOrderRequest
 {
     public Guid Reference { get; set; }
     public string ProductName { get; set; }

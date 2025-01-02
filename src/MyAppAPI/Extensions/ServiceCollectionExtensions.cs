@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services
-            .AddScoped<IValidator<OrderRequest>, OrderRequestValidator>()
+            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
             .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
             .AddFluentValidationAutoValidation();
 
