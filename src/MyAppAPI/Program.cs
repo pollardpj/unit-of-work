@@ -18,7 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 {
-    return new MyAppUnitOfWorkFactory("Server=(localdb)\\MSSQLLocalDB;Database=myapp");
+    return new MyAppUnitOfWorkFactory(
+        "Server=(localdb)\\MSSQLLocalDB;Database=myapp", 
+        sp.GetService<ILoggerFactory>());
 });
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());

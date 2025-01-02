@@ -1,5 +1,6 @@
 ﻿using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Repository;
 
@@ -7,10 +8,11 @@ public class MyAppUnitOfWorkFactory : IMyAppUnitOfWorkFactory
 {
     private DbContextOptions<MyAppContext> _options;
 
-    public MyAppUnitOfWorkFactory(string connectionString)
+    public MyAppUnitOfWorkFactory(string connectionString, ILoggerFactory loggerFactory)
     {
         _options = new DbContextOptionsBuilder<MyAppContext>()
             .UseSqlServer(connectionString)
+            .UseLoggerFactory(loggerFactory)
             .Options;
     }
 
