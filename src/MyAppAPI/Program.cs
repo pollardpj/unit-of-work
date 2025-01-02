@@ -24,6 +24,7 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped<IValidator<OrderRequest>, OrderRequestValidator>();
+builder.Services.AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>();
 
 builder.Services.AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
 builder.Services.AddScoped<IOrderEventsService, OrderEventsService>();
@@ -50,7 +51,8 @@ app.MapPost("/api/order",
     async (
         OrderRequest request,
         IValidator<OrderRequest> validator,
-        ICommandHandler <CreateOrder> handler) =>
+        ICommandHandler <CreateOrder> handler,
+        IMapper mapper) =>
 {
     var validationResult = await validator.ValidateAsync(request);
 
@@ -59,11 +61,7 @@ app.MapPost("/api/order",
         return Results.ValidationProblem(validationResult.ToDictionary());
     }
 
-    var command = new CreateOrder
-    {
-        Reference = request.Reference,
-        ProductName = request.ProductName
-    };
+    var command = mapper.Map<CreateOrder>(request);
 
     await handler.ExecuteAsync(command);
 
@@ -77,9 +75,17 @@ app.MapPost("/api/order",
 app.MapGet("/api/orders",
     async (
         [AsParameters] GetOrdersRequest request,
+        IValidator<GetOrdersRequest> validator,
         IQueryHandler<GetOrders, GetOrdersResult> handler,
         IMapper mapper) =>
     {
+        var validationResult = await validator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         return Results.Ok(
             await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
     });

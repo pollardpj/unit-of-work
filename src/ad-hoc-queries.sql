@@ -1,1 +1,1 @@
-﻿SELECT COUNT(*) FROM [OrderEvent] WHERE [Status] = 1000
+﻿select count(*) from [OrderEvent]

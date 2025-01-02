@@ -18,7 +18,7 @@ namespace Domain.Commands.Handlers
             {
                 Reference = command.Reference,
                 ProductName = command.ProductName,
-                Price = 1.99M
+                Price = 2.99M
             };
 
             order.Events.Add(new OrderEvent

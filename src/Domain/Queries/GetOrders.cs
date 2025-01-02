@@ -3,14 +3,10 @@ using Shared.CQRS;
 
 namespace Domain.Queries;
 
-public class GetOrders : IQuery<GetOrdersResult>
+public class GetOrders : PagedQuery, IQuery<GetOrdersResult>
 {
-    public string Filter { get; set; }
-    public int Skip { get; set; }
-    public int Top { get; set; } = 10;
 }
 
-public class GetOrdersResult
+public class GetOrdersResult : PagedResult<OrderDto>
 {
-    public IEnumerable<OrderDto> Orders { get; set; }
 }

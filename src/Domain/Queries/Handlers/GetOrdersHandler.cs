@@ -18,16 +18,30 @@ public class GetOrdersHandler(IMyAppUnitOfWorkFactory unitOfWorkFactory, IMapper
 
         if (!string.IsNullOrWhiteSpace(query.Filter))
         {
-            orders = orders.OData().Filter(query.Filter).ToOriginalQuery();
+            orders = orders.OData()
+                .Filter(query.Filter)
+                .ToOriginalQuery();
+        }
+
+        var totalCount = await orders.CountAsync();
+
+        if (!string.IsNullOrWhiteSpace(query.OrderBy))
+        {
+            orders = orders.OData()
+                .OrderBy(query.OrderBy)
+                .ToOriginalQuery();
         }
 
         var projectedOrders = orders
-            .Take(20)
+            .Skip(query.Skip ?? 0)
+            .Take(query.Top ?? 100)
+            .AsNoTracking()
             .ProjectTo<OrderDto>(mapper.ConfigurationProvider);
 
         return new GetOrdersResult
         {
-            Orders = await projectedOrders.ToListAsync()
+            TotalCount = totalCount,
+            Items = await projectedOrders.ToListAsync()
         };
     }
 }

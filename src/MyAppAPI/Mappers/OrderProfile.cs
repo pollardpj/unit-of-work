@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Commands;
 using Domain.DTOs;
 using Domain.Entities;
 using Domain.Queries;
@@ -10,6 +11,8 @@ namespace MyAppAPI.Mappers
     {
         public OrderProfile()
         {
+            CreateMap<OrderRequest, CreateOrder>();
+
             CreateMap<OrderEvent, OrderEventDto>();
             CreateMap<Order, OrderDto>();
 

@@ -1,7 +1,8 @@
-﻿namespace MyAppAPI.Models
+﻿using Shared.CQRS;
+
+namespace MyAppAPI.Models
 {
-    public class GetOrdersRequest
+    public class GetOrdersRequest : PagedQuery
     {
-        public string Filter { get; set; }
     }
 }
