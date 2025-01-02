@@ -8,12 +8,14 @@ using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.Json;
 using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace MyAppAPI.Extensions;
 
@@ -57,6 +59,11 @@ public static class ServiceCollectionExtensions
             {
                 Enabled = false
             };
+        });
+
+        services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         return services;

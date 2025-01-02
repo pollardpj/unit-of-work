@@ -3,6 +3,7 @@ using Domain.Enums;
 using Domain.Events;
 using Domain.Services;
 using Domain.UnitOfWork;
+using Shared;
 using Shared.CQRS;
 using System.Text.Json;
 
@@ -33,7 +34,7 @@ namespace Domain.Commands.Handlers
                     Type = OrderEventType.Created,
                     ProductName = order.ProductName,
                     Price = order.Price
-                })
+                }, JsonHelpers.DefaultOptions)
             });
 
             using (var unitOfWork = unitOfWorkFactory.Create())
