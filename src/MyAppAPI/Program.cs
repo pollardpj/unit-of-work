@@ -2,6 +2,8 @@ using Dapr.Actors;
 using Domain.Actors;
 using Domain.Commands;
 using Domain.Commands.Handlers;
+using Domain.Queries;
+using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
@@ -9,6 +11,7 @@ using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +20,13 @@ builder.Services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
     return new MyAppUnitOfWorkFactory("Server=(localdb)\\MSSQLLocalDB;Database=myapp");
 });
 
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
 builder.Services.AddScoped<IValidator<OrderRequest>, OrderRequestValidator>();
 
 builder.Services.AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
 builder.Services.AddScoped<IOrderEventsService, OrderEventsService>();
+builder.Services.AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
 
 builder.Services.AddActors(options =>
 {
@@ -43,7 +49,7 @@ app.MapPost("/api/order",
     async (
         OrderRequest request,
         IValidator<OrderRequest> validator,
-        ICommandHandler <CreateOrder> createOrderHandler) =>
+        ICommandHandler <CreateOrder> handler) =>
 {
     var validationResult = await validator.ValidateAsync(request);
 
@@ -58,7 +64,7 @@ app.MapPost("/api/order",
         ProductName = request.ProductName
     };
 
-    await createOrderHandler.ExecuteAsync(command);
+    await handler.ExecuteAsync(command);
 
     return Results.Ok(new
     {
@@ -66,6 +72,12 @@ app.MapPost("/api/order",
         OrderPrice = command.Price
     });
 });
+
+app.MapGet("/api/orders",
+    async (IQueryHandler<GetOrders, GetOrdersResult> handler) =>
+    {
+        return Results.Ok(await handler.ExecuteAsync(new GetOrders()));
+    });
 
 app.MapActorsHandlers();
 
