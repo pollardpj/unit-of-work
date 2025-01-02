@@ -6,9 +6,9 @@ public class UnitOfWork(DbContext context) : IUnitOfWork
 {
     private bool _disposed;
 
-    public async ValueTask<int> FlushAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<int> FlushAsync(CancellationToken token = default)
     {
-        return await context.SaveChangesAsync(cancellationToken);
+        return await context.SaveChangesAsync(token);
     }
 
     private void Dispose(bool disposing)

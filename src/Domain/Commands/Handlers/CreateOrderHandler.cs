@@ -13,7 +13,7 @@ namespace Domain.Commands.Handlers
         IMyAppUnitOfWorkFactory unitOfWorkFactory,
         IOrderEventsService eventsService) : ICommandHandler<CreateOrder>
     {
-        public async ValueTask ExecuteAsync(CreateOrder command)
+        public async ValueTask ExecuteAsync(CreateOrder command, CancellationToken token = default)
         {
             var order = new Order
             {
@@ -40,7 +40,7 @@ namespace Domain.Commands.Handlers
             using (var unitOfWork = unitOfWorkFactory.Create())
             {
                 unitOfWork.OrderRepository.Add(order);
-                await unitOfWork.FlushAsync();
+                await unitOfWork.FlushAsync(token);
             }
 
             command.Price = order.Price;

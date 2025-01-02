@@ -1,11 +1,15 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
+using Dapr;
 using Domain.Commands;
+using Domain.Events;
 using Domain.Exceptions;
 using Domain.Queries;
 using MyAppAPI.Models;
+using Shared;
 using Shared.CQRS;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
+using System.Text.Json;
 
 namespace MyAppAPI.Extensions;
 
@@ -20,6 +24,9 @@ public static class WebApplicationExtensions
 
         // Dapr will send serialized event object vs. being raw CloudEvent
         app.UseCloudEvents();
+
+        // needed for Dapr pub/sub routing
+        app.MapSubscribeHandler();
 
         app.MapPost("/api/{version:apiVersion}/order",
             async (
@@ -46,7 +53,8 @@ public static class WebApplicationExtensions
             async (
                 [AsParameters] GetOrdersRequest request,
                 IQueryHandler<GetOrders, GetOrdersResult> handler,
-                IMapper mapper) =>
+                IMapper mapper,
+                CancellationToken token = default) =>
             {
                 try
                 {
@@ -62,6 +70,17 @@ public static class WebApplicationExtensions
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
+
+        // Dapr subscription in [Topic] routes orders topic to this route
+        app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")] 
+            (
+                ILogger<Program> logger,
+                OrderEventPayload order,
+                CancellationToken token = default) =>
+            {
+                logger.LogInformation("Order Created Message Received: {Order}", 
+                    JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
+            });
 
         app.MapActorsHandlers();
 

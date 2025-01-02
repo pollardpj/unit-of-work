@@ -3,5 +3,5 @@
 public interface IQueryHandler<TQuery, TResult>
     where TQuery : IQuery<TResult>
 {
-    ValueTask<TResult> ExecuteAsync(TQuery query);
+    ValueTask<TResult> ExecuteAsync(TQuery query, CancellationToken token = default);
 }

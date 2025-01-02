@@ -2,5 +2,5 @@
 
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
-    public ValueTask<int> FlushAsync(CancellationToken cancellationToken = default);
+    public ValueTask<int> FlushAsync(CancellationToken token = default);
 }

@@ -2,5 +2,5 @@
 
 public interface ICommandHandler<TCommand>
 {
-    ValueTask ExecuteAsync(TCommand command);
+    ValueTask ExecuteAsync(TCommand command, CancellationToken token = default);
 }

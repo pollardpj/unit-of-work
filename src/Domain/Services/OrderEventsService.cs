@@ -7,7 +7,7 @@ namespace Domain.Services;
 
 public class OrderEventsService(ILogger<OrderEventsService> logger) : IOrderEventsService
 {
-    public async ValueTask EnsurePublishEvents(Guid orderReference)
+    public async ValueTask EnsurePublishEvents(Guid orderReference, CancellationToken token = default)
     {
         try
         {

@@ -2,6 +2,6 @@
 {
     public interface IOrderEventsService
     {
-        ValueTask EnsurePublishEvents(Guid orderReference);
+        ValueTask EnsurePublishEvents(Guid orderReference, CancellationToken token = default);
     }
 }

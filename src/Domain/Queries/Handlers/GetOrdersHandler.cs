@@ -14,7 +14,7 @@ public class GetOrdersHandler(
     IMyAppUnitOfWorkFactory unitOfWorkFactory, 
     IMapper mapper) : IQueryHandler<GetOrders, GetOrdersResult>
 {
-    public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query)
+    public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query, CancellationToken token = default)
     {
         using var unitOfWork = unitOfWorkFactory.Create();
 
@@ -47,7 +47,7 @@ public class GetOrdersHandler(
             return new GetOrdersResult
             {
                 TotalCount = totalCount,
-                Items = await projectedOrders.ToListAsync()
+                Items = await projectedOrders.ToListAsync(token)
             };
         }
         catch (ODataException ex)
