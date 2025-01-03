@@ -38,7 +38,7 @@ public static class IQueryableExtensions
 
             var membersToExpand = new List<string>();
 
-            if (!string.IsNullOrEmpty(query.Expand))
+            if (!string.IsNullOrWhiteSpace(query.Expand))
             {
                 membersToExpand = [.. query.Expand.Split(',', StringSplitOptions.RemoveEmptyEntries)];
             }

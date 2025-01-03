@@ -7,20 +7,20 @@ namespace Domain.Actors;
 public class OrderSupervisorActor(
     ActorHost _host,
     IMyAppUnitOfWorkFactory _unitOfWorkFactory,
-    IOrderEventsService _eventsService) : Actor(_host), IOrderSupervisorActor, IRemindable
+    IOrderEventsService _eventsService) : Actor(_host), IOrderSupervisorActor
 {
     public async Task StartCheckingOrders()
     {
-        await RegisterReminderAsync("CheckOrders", null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+        await RegisterTimerAsync("CheckOrders", nameof(ReceiveTimerAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
     }
 
-    public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
+    public async Task ReceiveTimerAsync(byte[] state)
     {
         using var unitOfWork = _unitOfWorkFactory.Create();
 
         var orderReferences = unitOfWork.OrderRepository
             .GetOrderReferencesWithPendingEvents(DateTime.UtcNow.AddSeconds(-10));
-        
+
         await foreach (var orderReference in orderReferences)
         {
             await _eventsService.TryPublishEvents(orderReference);

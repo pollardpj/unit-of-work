@@ -62,12 +62,12 @@ public static class ServiceCollectionExtensions
             {
                 options.Actors.RegisterActor<OrderActor>(typeOptions: new()
                 {
-                    ActorIdleTimeout = TimeSpan.FromSeconds(5)
+                    ActorIdleTimeout = TimeSpan.FromSeconds(10)
                 });
 
                 options.Actors.RegisterActor<OrderSupervisorActor>(typeOptions: new()
                 {
-                    ActorIdleTimeout = TimeSpan.FromMinutes(1)
+                    ActorIdleTimeout = TimeSpan.FromMinutes(2)
                 });
             });
 
