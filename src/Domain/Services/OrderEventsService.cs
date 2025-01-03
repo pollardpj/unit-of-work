@@ -7,17 +7,20 @@ namespace Domain.Services;
 
 public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEventsService
 {
-    public async ValueTask EnsurePublishEvents(Guid orderReference, CancellationToken token = default)
+    public async ValueTask<bool> TryPublishEvents(Guid orderReference, CancellationToken token = default)
     {
         try
         {
             var actorId = new ActorId($"order-{orderReference}");
             var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
             await proxy.PublishEvents(orderReference);
+
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
+            return false;
         }
     }
 

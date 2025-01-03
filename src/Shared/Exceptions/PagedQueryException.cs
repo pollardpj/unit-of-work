@@ -1,12 +1,8 @@
-﻿namespace Domain.Exceptions;
+﻿namespace Shared.Exceptions;
 
-public class PagedQueryException : Exception
+public class PagedQueryException(string message, Exception innerException)
+    : Exception(message, innerException)
 {
-    public PagedQueryException(string message, Exception innerException) 
-        : base(message, innerException)
-    {
-    }
-
     public object Details => new
     {
         Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",

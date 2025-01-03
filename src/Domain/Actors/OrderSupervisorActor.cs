@@ -23,7 +23,7 @@ public class OrderSupervisorActor(
         
         await foreach (var orderReference in orderReferences)
         {
-            await _eventsService.EnsurePublishEvents(orderReference);
+            await _eventsService.TryPublishEvents(orderReference);
         }
     }
 }

@@ -6,4 +6,5 @@ public abstract class PagedQuery
     public int? Skip { get; init; }
     public int? Top { get; init; }
     public string OrderBy { get; init; }
+    public string Expand { get; init; }
 }

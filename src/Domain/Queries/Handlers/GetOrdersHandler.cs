@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Community.OData.Linq;
 using Domain.DTOs;
-using Domain.Exceptions;
+using Domain.Entities;
 using Domain.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OData;
 using Shared.CQRS;
+using Shared.Repository;
 
 namespace Domain.Queries.Handlers;
 
@@ -20,39 +17,8 @@ public class GetOrdersHandler(
 
         var orders = unitOfWork.OrderRepository.GetAll();
 
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(query.Filter))
-            {
-                orders = orders.OData()
-                    .Filter(query.Filter)
-                    .ToOriginalQuery();
-            }
+        var result = await orders.GetPagedResult<Order, OrderDto, GetOrdersResult>(query, _mapper, token);
 
-            var totalCount = await orders.CountAsync();
-
-            if (!string.IsNullOrWhiteSpace(query.OrderBy))
-            {
-                orders = orders.OData()
-                    .OrderBy(query.OrderBy)
-                    .ToOriginalQuery();
-            }
-
-            var projectedOrders = orders
-                .Skip(query.Skip ?? 0)
-                .Take(query.Top ?? 100)
-                .AsNoTracking()
-                .ProjectTo<OrderDto>(_mapper.ConfigurationProvider);
-
-            return new GetOrdersResult
-            {
-                TotalCount = totalCount,
-                Items = await projectedOrders.ToListAsync(token)
-            };
-        }
-        catch (Exception ex) when (ex is ArgumentException or ODataException)
-        {
-            throw new PagedQueryException(ex.Message, ex);
-        }
+        return result;
     }
 }

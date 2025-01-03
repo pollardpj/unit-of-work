@@ -3,6 +3,6 @@
     public interface IOrderEventsService
     {
         ValueTask<bool> TryInitialiseSupervisor(CancellationToken token = default);
-        ValueTask EnsurePublishEvents(Guid orderReference, CancellationToken token = default);
+        ValueTask<bool> TryPublishEvents(Guid orderReference, CancellationToken token = default);
     }
 }

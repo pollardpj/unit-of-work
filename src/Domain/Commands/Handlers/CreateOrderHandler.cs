@@ -45,7 +45,7 @@ namespace Domain.Commands.Handlers
 
             command.Price = order.Price;
 
-            await _eventsService.EnsurePublishEvents(command.Reference, token);
+            await _eventsService.TryPublishEvents(command.Reference, token);
         }
     }
 }

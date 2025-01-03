@@ -3,11 +3,11 @@ using AutoMapper;
 using Dapr;
 using Domain.Commands;
 using Domain.Events;
-using Domain.Exceptions;
 using Domain.Queries;
 using MyAppAPI.Models;
 using Shared;
 using Shared.CQRS;
+using Shared.Exceptions;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Text.Json;
 

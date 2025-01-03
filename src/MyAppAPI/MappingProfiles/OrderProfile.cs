@@ -14,7 +14,13 @@ namespace MyAppAPI.MappingProfiles
             CreateMap<CreateOrderRequest, CreateOrder>();
 
             CreateMap<OrderEvent, OrderEventDto>();
-            CreateMap<Order, OrderDto>();
+
+            CreateMap<Order, OrderDto>()
+                .ForMember(o => o.Events, o =>
+                {
+                    o.MapFrom(s => s.Events);
+                    o.ExplicitExpansion();
+                });
 
             CreateMap<GetOrdersRequest, GetOrders>();
         }

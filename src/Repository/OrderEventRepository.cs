@@ -9,7 +9,8 @@ namespace Repository;
 public class OrderEventRepository(MyAppContext _context) 
     : Repository<OrderEvent>(_context), IOrderEventRepository
 {
-    public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference)
+    public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(
+        Guid orderReference, CancellationToken token = default)
     {
         return await _context.Set<Order>()
             .Where(o => o.Reference == orderReference)
@@ -17,6 +18,6 @@ public class OrderEventRepository(MyAppContext _context)
                 .Where(e => e.Status == EventStatus.Pending))
             .OrderBy(e => e.CreatedTimestampUtc)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(token);
     }
 }
