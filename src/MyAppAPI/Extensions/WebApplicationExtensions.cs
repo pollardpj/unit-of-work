@@ -32,11 +32,12 @@ public static class WebApplicationExtensions
             async (
                 CreateOrderRequest request,
                 ICommandHandler<CreateOrder> handler,
-                IMapper mapper) =>
+                IMapper mapper,
+                CancellationToken token = default) =>
             {
                 var command = mapper.Map<CreateOrder>(request);
 
-                await handler.ExecuteAsync(command);
+                await handler.ExecuteAsync(command, token);
 
                 return Results.Ok(new
                 {
@@ -59,7 +60,7 @@ public static class WebApplicationExtensions
                 try
                 {
                     return Results.Ok(
-                        await handler.ExecuteAsync(mapper.Map<GetOrders>(request)));
+                        await handler.ExecuteAsync(mapper.Map<GetOrders>(request), token));
                 }
                 catch (PagedQueryException ex)
                 {

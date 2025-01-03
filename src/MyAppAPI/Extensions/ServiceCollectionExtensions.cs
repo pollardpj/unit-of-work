@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Dapr.Actors;
+using Dapr.Actors.Runtime;
 using Domain.Actors;
 using Domain.Commands;
 using Domain.Commands.Handlers;
@@ -13,10 +14,10 @@ using MyAppAPI.HostedServices;
 using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
+using Shared;
 using Shared.CQRS;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace MyAppAPI.Extensions;
 
@@ -47,11 +48,13 @@ public static class ServiceCollectionExtensions
             .AddFluentValidationAutoValidation();
 
         services
-            .AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>()
-            .AddScoped<IOrderEventsService, OrderEventsService>();
-
+            .AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
+        
         services
             .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
+
+        services
+            .AddScoped<IOrderEventsService, OrderEventsService>();
 
         services
             .AddHostedService<OrderCheckingService>();
@@ -59,21 +62,26 @@ public static class ServiceCollectionExtensions
         services
             .AddActors(options =>
             {
-                options.Actors.RegisterActor<OrderActor>();
-                options.Actors.RegisterActor<OrderSupervisorActor>();
-
-                options.ActorIdleTimeout = TimeSpan.FromSeconds(15);
-
-                options.ReentrancyConfig = new ActorReentrancyConfig
+                options.Actors.RegisterActor<OrderActor>(typeOptions: new()
                 {
-                    Enabled = false
-                };
+                    ActorIdleTimeout = TimeSpan.FromSeconds(5)
+                });
+
+                options.Actors.RegisterActor<OrderSupervisorActor>(typeOptions: new()
+                {
+                    ActorIdleTimeout = TimeSpan.FromMinutes(1)
+                });
             });
 
         services
             .Configure<JsonOptions>(options =>
             {
-                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.SerializerOptions.PropertyNamingPolicy = JsonHelpers.DefaultOptions.PropertyNamingPolicy;
+
+                foreach (var converter in JsonHelpers.DefaultOptions.Converters)
+                {
+                    options.SerializerOptions.Converters.Add(converter);
+                }
             });
 
         return services;

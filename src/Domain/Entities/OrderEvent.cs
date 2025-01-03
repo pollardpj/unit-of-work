@@ -4,10 +4,10 @@ namespace Domain.Entities;
 
 public class OrderEvent
 {
-    public int Id { get; set; }
-    public Guid Reference { get; set; }
-    public OrderEventType Type { get; set; }
-    public DateTime CreatedTimestampUtc { get; set; }
-    public string Payload { get; set; }
+    public int Id { get; init; }
+    public Guid Reference { get; init; }
+    public OrderEventType Type { get; init; }
+    public DateTime CreatedTimestampUtc { get; init; }
+    public string Payload { get; init; }
     public EventStatus Status { get; set; }
 }
