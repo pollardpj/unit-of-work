@@ -2,8 +2,8 @@
 
 public abstract class PagedQuery
 {
-    public string Filter { get; set; }
-    public int? Skip { get; set; }
-    public int? Top { get; set; }
-    public string OrderBy { get; set; }
+    public string Filter { get; init; }
+    public int? Skip { get; init; }
+    public int? Top { get; init; }
+    public string OrderBy { get; init; }
 }

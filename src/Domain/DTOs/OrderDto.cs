@@ -2,8 +2,8 @@
 
 public class OrderDto
 {
-    public Guid Reference { get; set; }
-    public string ProductName { get; set; }
-    public decimal Price { get; set; }
-    public IEnumerable<OrderEventDto> Events { get; set; }
+    public Guid Reference { get; init; }
+    public string ProductName { get; init; }
+    public decimal Price { get; init; }
+    public IEnumerable<OrderEventDto> Events { get; init; }
 }

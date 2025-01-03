@@ -22,7 +22,10 @@ public class MyAppUnitOfWorkFactory : IMyAppUnitOfWorkFactory
 
         return new MyAppUnitOfWork(
             context, 
-            new OrderRepository(context), 
-            new OrderEventRepository(context));
+            new MyAppRepositories
+            {
+                OrderRepository = new OrderRepository(context),
+                OrderEventRepository = new OrderEventRepository(context)
+            });
     }
 }

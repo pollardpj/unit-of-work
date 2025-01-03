@@ -4,9 +4,9 @@ namespace Domain.DTOs;
 
 public class OrderEventDto
 {
-    public Guid Reference { get; set; }
-    public OrderEventType Type { get; set; }
-    public DateTime CreatedTimestampUtc { get; set; }
-    public string Payload { get; set; }
-    public EventStatus Status { get; set; }
+    public Guid Reference { get; init; }
+    public OrderEventType Type { get; init; }
+    public DateTime CreatedTimestampUtc { get; init; }
+    public string Payload { get; init; }
+    public EventStatus Status { get; init; }
 }

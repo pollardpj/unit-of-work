@@ -6,12 +6,12 @@ using Shared.Repository;
 
 namespace Repository;
 
-public class OrderEventRepository(MyAppContext context) 
-    : Repository<OrderEvent>(context), IOrderEventRepository
+public class OrderEventRepository(MyAppContext _context) 
+    : Repository<OrderEvent>(_context), IOrderEventRepository
 {
     public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(Guid orderReference)
     {
-        return await context.Set<Order>()
+        return await _context.Set<Order>()
             .Where(o => o.Reference == orderReference)
             .SelectMany(o => o.Events
                 .Where(e => e.Status == EventStatus.Pending))

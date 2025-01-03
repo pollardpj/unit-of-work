@@ -2,6 +2,6 @@
 
 public abstract class PagedResult<TPagedItem>
 {
-    public int TotalCount { get; set; }
-    public IEnumerable<TPagedItem> Items { get; set; }
+    public required int TotalCount { get; init; }
+    public required IEnumerable<TPagedItem> Items { get; init; }
 }

@@ -4,8 +4,8 @@ namespace Domain.Events;
 
 public class OrderEventPayload
 {
-    public Guid Reference { get; init; }
-    public OrderEventType Type { get; init; }
-    public string ProductName { get; init; }
-    public decimal Price { get; init; }
+    public required Guid Reference { get; init; }
+    public required OrderEventType Type { get; init; }
+    public required string ProductName { get; init; }
+    public required decimal Price { get; init; }
 }

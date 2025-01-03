@@ -6,19 +6,19 @@ using Shared.Repository;
 
 namespace Repository;
 
-public class OrderRepository(MyAppContext context) 
-    : Repository<Order>(context), IOrderRepository
+public class OrderRepository(MyAppContext _context) 
+    : Repository<Order>(_context), IOrderRepository
 {
     public async ValueTask<Order> GetOrderWithEvents(Guid reference)
     {
-        return await context.Set<Order>()
+        return await _context.Set<Order>()
             .Include(u => u.Events)
             .FirstOrDefaultAsync(u => u.Reference == reference);
     }
 
     public IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents(DateTime createdBeforeTimestampUtc)
     {
-        return context.Set<Order>()
+        return _context.Set<Order>()
             .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending && 
                                           e.CreatedTimestampUtc < createdBeforeTimestampUtc))
             .Select(o => o.Reference)

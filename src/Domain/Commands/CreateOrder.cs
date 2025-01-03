@@ -2,11 +2,11 @@
 {
     public class CreateOrder
     {
-        public Guid Reference { get; set; }
-        public string ProductName { get; set; }
+        public required Guid Reference { get; init; }
+        public required string ProductName { get; init; }
 
         // Output:
 
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
     }
 }
