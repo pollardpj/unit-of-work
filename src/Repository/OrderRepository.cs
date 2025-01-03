@@ -21,6 +21,7 @@ public class OrderRepository(MyAppContext _context)
         return _context.Set<Order>()
             .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending && 
                                           e.CreatedTimestampUtc < createdBeforeTimestampUtc))
+            .OrderBy(o => o.Id)
             .Select(o => o.Reference)
             .AsAsyncEnumerable();
     }

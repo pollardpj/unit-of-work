@@ -1,16 +1,14 @@
 ﻿using Asp.Versioning;
-using Dapr.Actors;
-using Dapr.Actors.Runtime;
 using Domain.Actors;
 using Domain.Commands;
 using Domain.Commands.Handlers;
+using Domain.HostedServices;
 using Domain.Queries;
 using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
-using MyAppAPI.HostedServices;
 using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;

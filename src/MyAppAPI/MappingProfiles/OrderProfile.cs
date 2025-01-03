@@ -5,7 +5,7 @@ using Domain.Entities;
 using Domain.Queries;
 using MyAppAPI.Models;
 
-namespace MyAppAPI.Mappers
+namespace MyAppAPI.MappingProfiles
 {
     public class OrderProfile : Profile
     {

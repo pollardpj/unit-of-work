@@ -1,6 +1,9 @@
 ﻿using Domain.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace MyAppAPI.HostedServices
+namespace Domain.HostedServices
 {
     public class OrderCheckingService(
         IServiceProvider _services, 

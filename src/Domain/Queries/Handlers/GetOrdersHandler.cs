@@ -50,7 +50,7 @@ public class GetOrdersHandler(
                 Items = await projectedOrders.ToListAsync(token)
             };
         }
-        catch (Exception ex) when (ex is ArgumentException || ex is ODataException)
+        catch (Exception ex) when (ex is ArgumentException or ODataException)
         {
             throw new PagedQueryException(ex.Message, ex);
         }
