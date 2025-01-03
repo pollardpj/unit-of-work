@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Domain.Services;
 
-public class OrderEventsService(ILogger<OrderEventsService> logger) : IOrderEventsService
+public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEventsService
 {
     public async ValueTask EnsurePublishEvents(Guid orderReference, CancellationToken token = default)
     {
@@ -17,7 +17,24 @@ public class OrderEventsService(ILogger<OrderEventsService> logger) : IOrderEven
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, ex.Message);
+        }
+    }
+
+    public async ValueTask<bool> TryInitialiseSupervisor(CancellationToken token = default)
+    {
+        try
+        {
+            var actorId = new ActorId($"order-supervisor");
+            var proxy = ActorProxy.Create<IOrderSupervisorActor>(actorId, nameof(OrderSupervisorActor));
+            await proxy.StartCheckingOrders();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return false;
         }
     }
 }

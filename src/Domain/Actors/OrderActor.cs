@@ -11,9 +11,9 @@ using System.Text.Json;
 namespace Domain.Actors;
 
 public class OrderActor(
-    ActorHost host,
-    IMyAppUnitOfWorkFactory unitOfWorkFactory,
-    ILogger<OrderActor> logger) : Actor(host), IOrderActor, IRemindable
+    ActorHost _host,
+    IMyAppUnitOfWorkFactory _unitOfWorkFactory,
+    ILogger<OrderActor> _logger) : Actor(_host), IOrderActor, IRemindable
 {
     public async Task PublishEvents(Guid orderReference)
     {
@@ -34,7 +34,7 @@ public class OrderActor(
             .UseJsonSerializationOptions(JsonHelpers.DefaultOptions)
             .Build();
 
-        using var unitOfWork = unitOfWorkFactory.Create();
+        using var unitOfWork = _unitOfWorkFactory.Create();
 
         var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderReference);
         
@@ -53,7 +53,7 @@ public class OrderActor(
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Error on publishing event for order with reference {OrderReference}", data.OrderReference);
+                _logger.LogWarning(ex, "Error on publishing event for order with reference {OrderReference}", data.OrderReference);
             }
         }
     }

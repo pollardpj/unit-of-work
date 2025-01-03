@@ -6,9 +6,9 @@ public class Repository<T> : IRepository<T> where T : class
 {
     private readonly DbSet<T> _dbSet;
 
-    protected Repository(DbContext context)
+    protected Repository(DbContext _context)
     {
-        _dbSet = context.Set<T>();
+        _dbSet = _context.Set<T>();
     }
 
     public IQueryable<T> GetAll()

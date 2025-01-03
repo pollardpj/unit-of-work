@@ -11,12 +11,12 @@ using Shared.CQRS;
 namespace Domain.Queries.Handlers;
 
 public class GetOrdersHandler(
-    IMyAppUnitOfWorkFactory unitOfWorkFactory, 
-    IMapper mapper) : IQueryHandler<GetOrders, GetOrdersResult>
+    IMyAppUnitOfWorkFactory _unitOfWorkFactory, 
+    IMapper _mapper) : IQueryHandler<GetOrders, GetOrdersResult>
 {
     public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query, CancellationToken token = default)
     {
-        using var unitOfWork = unitOfWorkFactory.Create();
+        using var unitOfWork = _unitOfWorkFactory.Create();
 
         var orders = unitOfWork.OrderRepository.GetAll();
 
@@ -42,7 +42,7 @@ public class GetOrdersHandler(
                 .Skip(query.Skip ?? 0)
                 .Take(query.Top ?? 100)
                 .AsNoTracking()
-                .ProjectTo<OrderDto>(mapper.ConfigurationProvider);
+                .ProjectTo<OrderDto>(_mapper.ConfigurationProvider);
 
             return new GetOrdersResult
             {

@@ -2,13 +2,13 @@
 
 namespace Shared.Repository;
 
-public class UnitOfWork(DbContext context) : IUnitOfWork
+public class UnitOfWork(DbContext _context) : IUnitOfWork
 {
     private bool _disposed;
 
     public async ValueTask<int> FlushAsync(CancellationToken token = default)
     {
-        return await context.SaveChangesAsync(token);
+        return await _context.SaveChangesAsync(token);
     }
 
     private void Dispose(bool disposing)
@@ -17,7 +17,7 @@ public class UnitOfWork(DbContext context) : IUnitOfWork
         {
             if (disposing)
             {
-                context.Dispose();
+                _context.Dispose();
             }
         }
         _disposed = true;
@@ -31,7 +31,7 @@ public class UnitOfWork(DbContext context) : IUnitOfWork
 
     public async ValueTask DisposeAsync()
     {
-        if (context != null) await context.DisposeAsync();
+        if (_context != null) await _context.DisposeAsync();
         _disposed = true;
         GC.SuppressFinalize(this);
     }

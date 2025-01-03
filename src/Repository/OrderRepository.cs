@@ -16,10 +16,11 @@ public class OrderRepository(MyAppContext context)
             .FirstOrDefaultAsync(u => u.Reference == reference);
     }
 
-    public IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents()
+    public IAsyncEnumerable<Guid> GetOrderReferencesWithPendingEvents(DateTime createdBeforeTimestampUtc)
     {
         return context.Set<Order>()
-            .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending))
+            .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending && 
+                                          e.CreatedTimestampUtc < createdBeforeTimestampUtc))
             .Select(o => o.Reference)
             .AsAsyncEnumerable();
     }

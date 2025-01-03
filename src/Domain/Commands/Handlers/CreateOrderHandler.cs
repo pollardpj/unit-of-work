@@ -10,8 +10,8 @@ using System.Text.Json;
 namespace Domain.Commands.Handlers
 {
     public class CreateOrderHandler(
-        IMyAppUnitOfWorkFactory unitOfWorkFactory,
-        IOrderEventsService eventsService) : ICommandHandler<CreateOrder>
+        IMyAppUnitOfWorkFactory _unitOfWorkFactory,
+        IOrderEventsService _eventsService) : ICommandHandler<CreateOrder>
     {
         public async ValueTask ExecuteAsync(CreateOrder command, CancellationToken token = default)
         {
@@ -37,7 +37,7 @@ namespace Domain.Commands.Handlers
                 }, JsonHelpers.DefaultOptions)
             });
 
-            using (var unitOfWork = unitOfWorkFactory.Create())
+            using (var unitOfWork = _unitOfWorkFactory.Create())
             {
                 unitOfWork.OrderRepository.Add(order);
                 await unitOfWork.FlushAsync(token);
@@ -45,7 +45,7 @@ namespace Domain.Commands.Handlers
 
             command.Price = order.Price;
 
-            await eventsService.EnsurePublishEvents(command.Reference, token);
+            await _eventsService.EnsurePublishEvents(command.Reference, token);
         }
     }
 }

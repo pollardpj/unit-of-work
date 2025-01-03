@@ -9,6 +9,7 @@ using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
+using MyAppAPI.HostedServices;
 using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
@@ -23,19 +24,22 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMyAppServices(this IServiceCollection services)
     {
-        services.AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
-        {
-            return new MyAppUnitOfWorkFactory(
-                "Server=(localdb)\\MSSQLLocalDB;Database=myapp",
-                sp.GetService<ILoggerFactory>());
-        });
+        services
+            .AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
+            {
+                return new MyAppUnitOfWorkFactory(
+                    "Server=(localdb)\\MSSQLLocalDB;Database=myapp",
+                    sp.GetService<ILoggerFactory>());
+            });
 
-        services.AddApiVersioning(options =>
-        {
-            options.ApiVersionReader = new UrlSegmentApiVersionReader();
-        });
+        services
+            .AddApiVersioning(options =>
+            {
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
 
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services
+            .AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services
             .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
@@ -49,22 +53,28 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
 
-        services.AddActors(options =>
-        {
-            options.Actors.RegisterActor<OrderActor>();
+        services
+            .AddHostedService<OrderCheckingService>();
 
-            options.ActorIdleTimeout = TimeSpan.FromSeconds(5);
-
-            options.ReentrancyConfig = new ActorReentrancyConfig
+        services
+            .AddActors(options =>
             {
-                Enabled = false
-            };
-        });
+                options.Actors.RegisterActor<OrderActor>();
+                options.Actors.RegisterActor<OrderSupervisorActor>();
 
-        services.Configure<JsonOptions>(options =>
-        {
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
+                options.ActorIdleTimeout = TimeSpan.FromSeconds(15);
+
+                options.ReentrancyConfig = new ActorReentrancyConfig
+                {
+                    Enabled = false
+                };
+            });
+
+        services
+            .Configure<JsonOptions>(options =>
+            {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
         return services;
     }
