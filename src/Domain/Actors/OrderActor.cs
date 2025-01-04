@@ -19,7 +19,7 @@ public class OrderActor(
     {
         await RegisterTimerAsync("PublishEvents", 
             nameof(ReceiveTimerAsync),
-            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PublishEventsReminderData
+            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PublishEventsTimerData
             {
                 OrderReference = orderReference
             }, JsonHelpers.DefaultOptions)), 
@@ -29,7 +29,7 @@ public class OrderActor(
 
     public async Task ReceiveTimerAsync(byte[] state)
     {
-        var data = JsonSerializer.Deserialize<PublishEventsReminderData>(state, JsonHelpers.DefaultOptions);
+        var data = JsonSerializer.Deserialize<PublishEventsTimerData>(state, JsonHelpers.DefaultOptions);
 
         using var client = new DaprClientBuilder()
             .UseJsonSerializationOptions(JsonHelpers.DefaultOptions)
@@ -59,7 +59,7 @@ public class OrderActor(
         }
     }
 
-    private class PublishEventsReminderData
+    private class PublishEventsTimerData
     {
         public Guid OrderReference { get; set; }
     }

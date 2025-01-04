@@ -75,8 +75,8 @@ public static class WebApplicationExtensions
         // Dapr subscription in [Topic] routes orders topic to this route
         app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")] 
             (
-                ILogger<Program> logger,
                 OrderEventPayload order,
+                ILogger<Program> logger,
                 CancellationToken token = default) =>
             {
                 logger.LogInformation("Order Created Message Received: {Order}", 

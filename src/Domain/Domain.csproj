@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-		<PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="Dapr.Actors" Version="1.14.*-*" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
     </ItemGroup>

@@ -7,8 +7,6 @@
 
     <ItemGroup>
 		<PackageReference Include="Asp.Versioning.Http" Version="8.1.0" />
-		<PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="Dapr.Actors" Version="1.14.*-*" />
         <PackageReference Include="Dapr.AspNetCore" Version="1.14.*-*" />
         <PackageReference Include="Dapr.Actors.AspNetCore" Version="1.14.*-*" />
         <PackageReference Include="FluentValidation" Version="11.11.0" />
