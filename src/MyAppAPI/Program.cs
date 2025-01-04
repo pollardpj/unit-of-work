@@ -1,11 +1,28 @@
 using MyAppAPI.Extensions;
+using Serilog;
+using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.ConfigureLogging();
+
 builder.Services.AddMyAppServices();
 
-var app = builder.Build();
+try
+{
+    Log.Information("Starting web application");
 
-app.AddMyAppMiddleware();
+    var app = builder.Build();
 
-app.Run();
+    app.AddMyAppMiddleware();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
