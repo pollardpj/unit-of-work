@@ -18,7 +18,12 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
             .Property(o => o.ProductName)
             .IsRequired()
             .HasMaxLength(50);
-        
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.Price)
+            .IsRequired()
+            .HasPrecision(18, 2);
+
         modelBuilder.Entity<OrderEvent>()
             .ToTable("OrderEvent")
             .HasIndex(e => e.Reference, "UX_OrderEvent_Reference")

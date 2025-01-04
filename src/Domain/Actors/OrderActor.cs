@@ -17,6 +17,8 @@ public class OrderActor(
 {
     public async Task PublishEvents(Guid orderReference)
     {
+        _logger.LogInformation("Just doing my thing");
+
         await RegisterTimerAsync("PublishEvents", 
             nameof(ReceiveTimerAsync),
             Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PublishEventsTimerData

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SerilogTracing;
 
@@ -11,6 +10,7 @@ public static class LoggingExtensions
     {
         var logger = new LoggerConfiguration()
            .ReadFrom.Configuration(builder.Configuration)
+           .Filter.ByExcluding("RequestPath like '%/healthz%'")
            .CreateLogger();
 
         Log.Logger = logger;
@@ -20,7 +20,10 @@ public static class LoggingExtensions
         return new LoggingInfo
         {
             Logger = logger,
-            TraceHandle = new ActivityListenerConfiguration().TraceToSharedLogger()
+            TraceHandle = new ActivityListenerConfiguration()
+                .Instrument.AspNetCoreRequests()
+                .Instrument.HttpClientRequests()
+                .TraceToSharedLogger()
         };
     }
 }
