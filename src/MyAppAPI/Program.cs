@@ -4,7 +4,7 @@ using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureLogging();
+using var _ = builder.ConfigureLogging();
 
 builder.Services.AddMyAppServices();
 
