@@ -16,7 +16,7 @@ namespace MyAppAPI.MappingProfiles
             CreateMap<OrderEvent, OrderEventDto>();
 
             CreateMap<Order, OrderDto>()
-                .ForMember(o => o.Events, o =>
+                .ForMember(d => d.Events, o =>
                 {
                     o.MapFrom(s => s.Events);
                     o.ExplicitExpansion();

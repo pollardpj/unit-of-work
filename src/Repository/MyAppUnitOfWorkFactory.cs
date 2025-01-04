@@ -4,17 +4,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Repository;
 
-public class MyAppUnitOfWorkFactory : IMyAppUnitOfWorkFactory
+public class MyAppUnitOfWorkFactory(
+    string _connectionString, 
+    ILoggerFactory _loggerFactory) : IMyAppUnitOfWorkFactory
 {
-    private DbContextOptions<MyAppContext> _options;
-
-    public MyAppUnitOfWorkFactory(string connectionString, ILoggerFactory loggerFactory)
-    {
-        _options = new DbContextOptionsBuilder<MyAppContext>()
-            .UseSqlServer(connectionString)
-            .UseLoggerFactory(loggerFactory)
+    private readonly DbContextOptions<MyAppContext> _options = 
+        new DbContextOptionsBuilder<MyAppContext>()
+            .UseSqlServer(_connectionString)
+            .UseLoggerFactory(_loggerFactory)
             .Options;
-    }
 
     public IMyAppUnitOfWork Create()
     {

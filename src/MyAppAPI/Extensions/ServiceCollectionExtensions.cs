@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
             .AddFluentValidationAutoValidation();
 
         services
-            .AddScoped<ICommandHandler<CreateOrder>, CreateOrderHandler>();
+            .AddScoped<ICommandHandler<CreateOrder, CreateOrderResult>, CreateOrderHandler>();
         
         services
             .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();

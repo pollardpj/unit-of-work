@@ -1,9 +1,9 @@
 ﻿namespace Shared.Exceptions;
 
 public class PagedQueryException(string message, Exception innerException)
-    : Exception(message, innerException)
+    : BadRequestException(message, innerException)
 {
-    public object Details => new
+    public override object Details => new
     {
         Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
         Title = "One or more validation errors occurred.",

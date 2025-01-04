@@ -4,9 +4,10 @@
     {
         public required Guid Reference { get; init; }
         public required string ProductName { get; init; }
+    }
 
-        // Output:
-
-        public decimal? Price { get; set; }
+    public class CreateOrderResult
+    {
+        public decimal Price { get; init; }
     }
 }

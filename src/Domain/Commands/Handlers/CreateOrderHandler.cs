@@ -11,9 +11,9 @@ namespace Domain.Commands.Handlers
 {
     public class CreateOrderHandler(
         IMyAppUnitOfWorkFactory _unitOfWorkFactory,
-        IOrderEventsService _eventsService) : ICommandHandler<CreateOrder>
+        IOrderEventsService _eventsService) : ICommandHandler<CreateOrder, CreateOrderResult>
     {
-        public async ValueTask ExecuteAsync(CreateOrder command, CancellationToken token = default)
+        public async ValueTask<CreateOrderResult> ExecuteAsync(CreateOrder command, CancellationToken token = default)
         {
             var order = new Order
             {
@@ -43,9 +43,12 @@ namespace Domain.Commands.Handlers
                 await unitOfWork.FlushAsync(token);
             }
 
-            command.Price = order.Price;
-
             await _eventsService.TryPublishEvents(command.Reference, token);
+
+            return new CreateOrderResult
+            {
+                Price = order.Price
+            };
         }
     }
 }

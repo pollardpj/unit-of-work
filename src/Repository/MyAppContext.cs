@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
-public class MyAppContext(DbContextOptions<MyAppContext> options) : DbContext(options)
+public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_options)
 {
     public DbSet<Order> Orders { get; init; }
     

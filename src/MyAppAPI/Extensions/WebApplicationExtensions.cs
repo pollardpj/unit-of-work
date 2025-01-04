@@ -31,18 +31,18 @@ public static class WebApplicationExtensions
         app.MapPost("/api/{version:apiVersion}/order",
             async (
                 CreateOrderRequest request,
-                ICommandHandler<CreateOrder> handler,
+                ICommandHandler<CreateOrder, CreateOrderResult> handler,
                 IMapper mapper,
                 CancellationToken token = default) =>
             {
                 var command = mapper.Map<CreateOrder>(request);
 
-                await handler.ExecuteAsync(command, token);
+                var result = await handler.ExecuteAsync(command, token);
 
                 return Results.Ok(new
                 {
                     OrderReference = command.Reference,
-                    OrderPrice = command.Price
+                    OrderPrice = result.Price
                 });
 
             })
@@ -62,7 +62,7 @@ public static class WebApplicationExtensions
                     return Results.Ok(
                         await handler.ExecuteAsync(mapper.Map<GetOrders>(request), token));
                 }
-                catch (PagedQueryException ex)
+                catch (BadRequestException ex)
                 {
                     return Results.BadRequest(ex.Details);
                 }
