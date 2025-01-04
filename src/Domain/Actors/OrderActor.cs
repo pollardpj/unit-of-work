@@ -13,11 +13,12 @@ namespace Domain.Actors;
 public class OrderActor(
     ActorHost _host,
     IMyAppUnitOfWorkFactory _unitOfWorkFactory,
-    ILogger<OrderActor> _logger) : Actor(_host), IOrderActor, IRemindable
+    ILogger<OrderActor> _logger) : Actor(_host), IOrderActor
 {
     public async Task PublishEvents(Guid orderReference)
     {
-        await RegisterReminderAsync("PublishEvents", 
+        await RegisterTimerAsync("PublishEvents", 
+            nameof(ReceiveTimerAsync),
             Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PublishEventsReminderData
             {
                 OrderReference = orderReference
@@ -26,7 +27,7 @@ public class OrderActor(
             TimeSpan.FromMilliseconds(-1));
     }
 
-    public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
+    public async Task ReceiveTimerAsync(byte[] state)
     {
         var data = JsonSerializer.Deserialize<PublishEventsReminderData>(state, JsonHelpers.DefaultOptions);
 
