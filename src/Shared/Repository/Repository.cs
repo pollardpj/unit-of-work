@@ -11,7 +11,7 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    public IQueryable<T> GetAll()
+    public IQueryable<T> GetIQueryable()
     {
         return _dbSet.AsQueryable();
     }

@@ -15,7 +15,7 @@ public class GetOrdersHandler(
     {
         using var unitOfWork = _unitOfWorkFactory.Create();
 
-        var orders = unitOfWork.OrderRepository.GetAll();
+        var orders = unitOfWork.OrderRepository.GetIQueryable();
 
         var result = await orders.GetPagedResult<Order, OrderDto, GetOrdersResult>(query, _mapper, token);
 
