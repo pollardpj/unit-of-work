@@ -14,6 +14,7 @@ using MyAppAPI.Models.Validators;
 using Repository;
 using Shared;
 using Shared.CQRS;
+using Shared.Observability;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Reflection;
 
@@ -46,10 +47,14 @@ public static class ServiceCollectionExtensions
             .AddFluentValidationAutoValidation();
 
         services
-            .AddScoped<ICommandHandler<CreateOrder, CreateOrderResult>, CreateOrderHandler>();
-        
+            .AddScoped<ICommandHandler<CreateOrder, CreateOrderResult>, CreateOrderHandler>()
+            .Decorate<ICommandHandler<CreateOrder, CreateOrderResult>, LoggingCommandHandler<CreateOrder, CreateOrderResult>>()
+            .Decorate<ICommandHandler<CreateOrder, CreateOrderResult>, TracingCommandHandler<CreateOrder, CreateOrderResult>>();
+
         services
-            .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>();
+            .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>()
+            .Decorate<IQueryHandler<GetOrders, GetOrdersResult>, LoggingQueryHandler<GetOrders, GetOrdersResult>>()
+            .Decorate<IQueryHandler<GetOrders, GetOrdersResult>, TracingQueryHandler<GetOrders, GetOrdersResult>>();
 
         services
             .AddScoped<IOrderEventsService, OrderEventsService>();

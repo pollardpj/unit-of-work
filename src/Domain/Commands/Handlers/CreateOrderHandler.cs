@@ -5,7 +5,6 @@ using Domain.Services;
 using Domain.UnitOfWork;
 using Shared;
 using Shared.CQRS;
-using Shared.Observability;
 using System.Text.Json;
 
 namespace Domain.Commands.Handlers
@@ -16,8 +15,6 @@ namespace Domain.Commands.Handlers
     {
         public async ValueTask<CreateOrderResult> ExecuteAsync(CreateOrder command, CancellationToken token = default)
         {
-            using var _ = TracingHelpers.StartActivity(nameof(CreateOrderHandler));
-
             var order = new Order
             {
                 Reference = command.Reference,

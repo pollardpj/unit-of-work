@@ -5,8 +5,8 @@ namespace Shared.Observability;
 
 public static class TracingHelpers
 {
-    public static IDisposable StartActivity(string activityName)
+    public static IDisposable StartActivity(string activity, params object[] propertyValues)
     {
-        return Log.Logger.StartActivity(activityName);
+        return Log.Logger.StartActivity(activity, propertyValues);
     }
 }

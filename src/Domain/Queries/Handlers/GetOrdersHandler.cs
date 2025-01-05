@@ -14,8 +14,6 @@ public class GetOrdersHandler(
 {
     public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query, CancellationToken token = default)
     {
-        using var _ = TracingHelpers.StartActivity(nameof(GetOrdersHandler));
-
         using var unitOfWork = _unitOfWorkFactory.Create();
 
         var orders = unitOfWork.OrderRepository.GetIQueryable();
