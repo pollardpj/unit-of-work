@@ -2,7 +2,6 @@
 using Dapr.Actors.Client;
 using Domain.Actors;
 using Microsoft.Extensions.Logging;
-using Shared.Observability;
 
 namespace Domain.Services;
 
@@ -12,8 +11,6 @@ public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEve
     {
         try
         {
-            using var _ = TracingHelpers.StartActivity($"{nameof(OrderEventsService)}.{nameof(TryPublishEvents)}");
-
             var actorId = new ActorId($"order-{orderReference}");
             var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
             await proxy.PublishEvents(orderReference);
@@ -31,8 +28,6 @@ public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEve
     {
         try
         {
-            using var _ = TracingHelpers.StartActivity($"{nameof(OrderEventsService)}.{nameof(TryInitialiseSupervisor)}");
-
             var actorId = new ActorId($"order-supervisor");
             var proxy = ActorProxy.Create<IOrderSupervisorActor>(actorId, nameof(OrderSupervisorActor));
             await proxy.StartCheckingOrders();

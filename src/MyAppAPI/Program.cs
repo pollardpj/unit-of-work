@@ -1,16 +1,15 @@
 using MyAppAPI.Extensions;
-using Serilog;
 using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
-using var _ = builder.ConfigureLogging();
+using var bootstrapLogger = builder.ConfigureLogging();
 
 builder.Services.AddMyAppServices();
 
 try
 {
-    Log.Information("Starting web application");
+    bootstrapLogger.Information("Starting web application");
 
     var app = builder.Build();
 
@@ -20,9 +19,9 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Application terminated unexpectedly");
+    bootstrapLogger.Fatal(ex, "Application terminated unexpectedly");
 }
 finally
 {
-    Log.CloseAndFlush();
+    bootstrapLogger.CloseAndFlush();
 }

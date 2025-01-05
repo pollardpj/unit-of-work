@@ -79,8 +79,8 @@ public static class WebApplicationExtensions
                 ILogger<Program> logger,
                 CancellationToken token = default) =>
             {
-                logger.LogInformation("Order Created Message Received: {Order}", 
-                    JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
+                logger.LogInformation("Order Created Message Received for {OrderReference}: {Order}", 
+                    order.Reference, JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
             });
 
         app.MapActorsHandlers();

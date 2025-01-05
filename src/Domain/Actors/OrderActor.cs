@@ -17,7 +17,7 @@ public class OrderActor(
 {
     public async Task PublishEvents(Guid orderReference)
     {
-        _logger.LogInformation("Just doing my thing");
+        _logger.LogInformation("Registering Timer for {OrderReference}", orderReference);
 
         await RegisterTimerAsync("PublishEvents", 
             nameof(ReceiveTimerAsync),
@@ -39,8 +39,10 @@ public class OrderActor(
 
         using var unitOfWork = _unitOfWorkFactory.Create();
 
+        _logger.LogInformation("Processing Events for {OrderReference}", data.OrderReference);
+
         var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderReference);
-        
+
         foreach (var orderEvent in orderEvents)
         {
             var payload = JsonSerializer.Deserialize<OrderEventPayload>(
