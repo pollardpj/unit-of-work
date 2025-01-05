@@ -1,9 +1,7 @@
 ﻿using Asp.Versioning;
 using Domain.Actors;
-using Domain.Commands;
 using Domain.Commands.Handlers;
 using Domain.HostedServices;
-using Domain.Queries;
 using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
@@ -24,6 +22,61 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMyAppServices(this IServiceCollection services)
     {
+        // Core:
+
+        services
+            .AddVersioning()
+            .ConfigureJson();
+
+        // Validation:
+
+        services
+            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
+            .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
+            .AddFluentValidationAutoValidation();
+
+        // Application:
+
+        services
+            .AddAutoMapper(Assembly.GetExecutingAssembly())
+            .AddUnitOfWork()
+            .AddCqrs()
+            .AddScoped<IOrderEventsService, OrderEventsService>()
+            .AddHostedService<OrderCheckingService>()
+            .AddDaprServices();
+
+        return services;
+    }
+
+    private static IServiceCollection AddVersioning(this IServiceCollection services)
+    {
+        services
+            .AddApiVersioning(options =>
+            {
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureJson(this IServiceCollection services)
+    {
+        services
+            .Configure<JsonOptions>(options =>
+            {
+                options.SerializerOptions.PropertyNamingPolicy = JsonHelpers.DefaultOptions.PropertyNamingPolicy;
+
+                foreach (var converter in JsonHelpers.DefaultOptions.Converters)
+                {
+                    options.SerializerOptions.Converters.Add(converter);
+                }
+            });
+
+        return services;
+    }
+
+    private static IServiceCollection AddUnitOfWork(this IServiceCollection services)
+    {
         services
             .AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
             {
@@ -32,36 +85,11 @@ public static class ServiceCollectionExtensions
                     sp.GetService<ILoggerFactory>());
             });
 
-        services
-            .AddApiVersioning(options =>
-            {
-                options.ApiVersionReader = new UrlSegmentApiVersionReader();
-            });
+        return services;
+    }
 
-        services
-            .AddAutoMapper(Assembly.GetExecutingAssembly());
-
-        services
-            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
-            .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
-            .AddFluentValidationAutoValidation();
-
-        services
-            .AddScoped<ICommandHandler<CreateOrder, CreateOrderResult>, CreateOrderHandler>()
-            .Decorate<ICommandHandler<CreateOrder, CreateOrderResult>, LoggingCommandHandler<CreateOrder, CreateOrderResult>>()
-            .Decorate<ICommandHandler<CreateOrder, CreateOrderResult>, TracingCommandHandler<CreateOrder, CreateOrderResult>>();
-
-        services
-            .AddScoped<IQueryHandler<GetOrders, GetOrdersResult>, GetOrdersHandler>()
-            .Decorate<IQueryHandler<GetOrders, GetOrdersResult>, LoggingQueryHandler<GetOrders, GetOrdersResult>>()
-            .Decorate<IQueryHandler<GetOrders, GetOrdersResult>, TracingQueryHandler<GetOrders, GetOrdersResult>>();
-
-        services
-            .AddScoped<IOrderEventsService, OrderEventsService>();
-
-        services
-            .AddHostedService<OrderCheckingService>();
-
+    private static IServiceCollection AddDaprServices(this IServiceCollection services)
+    {
         services
             .AddActors(options =>
             {
@@ -76,16 +104,30 @@ public static class ServiceCollectionExtensions
                 });
             });
 
-        services
-            .Configure<JsonOptions>(options =>
-            {
-                options.SerializerOptions.PropertyNamingPolicy = JsonHelpers.DefaultOptions.PropertyNamingPolicy;
+        return services;
+    }
 
-                foreach (var converter in JsonHelpers.DefaultOptions.Converters)
-                {
-                    options.SerializerOptions.Converters.Add(converter);
-                }
-            });
+    private static IServiceCollection AddCqrs(this IServiceCollection services)
+    {
+        services.Scan(scan => scan
+            .FromAssemblyOf<CreateOrderHandler>()
+                .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
+                     .AsImplementedInterfaces()
+                     .WithScopedLifetime());
+
+        services
+            .Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>))
+            .Decorate(typeof(ICommandHandler<,>), typeof(TracingCommandHandler<,>));
+
+        services.Scan(scan => scan
+            .FromAssemblyOf<GetOrdersHandler>()
+                .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
+                     .AsImplementedInterfaces()
+                     .WithScopedLifetime());
+
+        services
+            .Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>))
+            .Decorate(typeof(IQueryHandler<,>), typeof(TracingQueryHandler<,>));
 
         return services;
     }

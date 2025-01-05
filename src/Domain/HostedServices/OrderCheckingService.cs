@@ -24,6 +24,8 @@ namespace Domain.HostedServices
 
         private async Task<bool> TryInitialiseOrderChecking()
         {
+            _logger.LogInformation("Starting Order Supervisor...");
+
             using var scope = _services.CreateScope();
 
             var service = scope.ServiceProvider.GetRequiredService<IOrderEventsService>();
