@@ -28,17 +28,11 @@ public static class ServiceCollectionExtensions
             .AddVersioning()
             .ConfigureJson();
 
-        // Validation:
-
-        services
-            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
-            .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
-            .AddFluentValidationAutoValidation();
-
         // Application:
 
         services
             .AddAutoMapper(Assembly.GetExecutingAssembly())
+            .AddValidation()
             .AddUnitOfWork()
             .AddCqrs()
             .AddScoped<IOrderEventsService, OrderEventsService>()
@@ -84,6 +78,16 @@ public static class ServiceCollectionExtensions
                     "Server=(localdb)\\MSSQLLocalDB;Database=myapp",
                     sp.GetService<ILoggerFactory>());
             });
+
+        return services;
+    }
+
+    private static IServiceCollection AddValidation(this IServiceCollection services)
+    {
+        services
+            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
+            .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
+            .AddFluentValidationAutoValidation();
 
         return services;
     }

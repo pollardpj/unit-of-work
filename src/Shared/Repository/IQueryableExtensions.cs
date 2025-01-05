@@ -40,7 +40,8 @@ public static class IQueryableExtensions
 
             if (!string.IsNullOrWhiteSpace(query.Expand))
             {
-                membersToExpand = [.. query.Expand.Split(',', StringSplitOptions.RemoveEmptyEntries)];
+                membersToExpand = [.. query.Expand.Split(',', 
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
             }
 
             var projectedOrders = queryable
