@@ -5,9 +5,9 @@ using Domain.Commands;
 using Domain.Events;
 using Domain.Queries;
 using MyAppAPI.Models;
-using Shared;
 using Shared.CQRS;
 using Shared.Exceptions;
+using Shared.Json;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Text.Json;
 

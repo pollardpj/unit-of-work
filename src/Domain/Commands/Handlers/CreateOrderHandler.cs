@@ -3,8 +3,8 @@ using Domain.Enums;
 using Domain.Events;
 using Domain.Services;
 using Domain.UnitOfWork;
-using Shared;
 using Shared.CQRS;
+using Shared.Json;
 using System.Text.Json;
 
 namespace Domain.Commands.Handlers

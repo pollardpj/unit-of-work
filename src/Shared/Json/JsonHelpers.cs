@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Shared;
+namespace Shared.Json;
 
 public static class JsonHelpers
 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shared.CQRS;
+using Shared.Json;
 using System.Text.Json;
 
 namespace Shared.Observability

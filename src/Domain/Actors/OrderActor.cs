@@ -4,7 +4,7 @@ using Domain.Enums;
 using Domain.Events;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Json;
 using System.Text;
 using System.Text.Json;
 
