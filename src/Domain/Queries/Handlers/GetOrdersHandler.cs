@@ -3,7 +3,6 @@ using Domain.DTOs;
 using Domain.Entities;
 using Domain.UnitOfWork;
 using Shared.CQRS;
-using Shared.Observability;
 using Shared.Repository;
 
 namespace Domain.Queries.Handlers;

@@ -22,11 +22,7 @@ public static class WebApplicationExtensions
             .HasApiVersion(new ApiVersion(2))
             .Build();
 
-        // Dapr will send serialized event object vs. being raw CloudEvent
-        app.UseCloudEvents();
-
-        // needed for Dapr pub/sub routing
-        app.MapSubscribeHandler();
+        app.MapDaprMiddleware();
 
         app.MapPost("/api/{version:apiVersion}/order",
             async (
@@ -72,18 +68,29 @@ public static class WebApplicationExtensions
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
+        return app;
+    }
+
+    private static WebApplication MapDaprMiddleware(this WebApplication app)
+    {
+        // Dapr will send serialized event object vs. being raw CloudEvent
+        app.UseCloudEvents();
+
+        // needed for Dapr pub/sub routing
+        app.MapSubscribeHandler();
+
+        app.MapActorsHandlers();
+
         // Dapr subscription in [Topic] routes orders topic to this route
-        app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")] 
-            (
+        app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")]
+        (
                 OrderEventPayload order,
                 ILogger<Program> logger,
                 CancellationToken token = default) =>
-            {
-                logger.LogInformation("Order Created Message Received for {OrderReference}: {Order}", 
-                    order.Reference, JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
-            });
-
-        app.MapActorsHandlers();
+        {
+            logger.LogInformation("Order Created Message Received for {OrderReference}: {Order}",
+                order.Reference, JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
+        });
 
         return app;
     }
