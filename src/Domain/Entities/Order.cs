@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Shared.Repository;
 
-public class Order
+namespace Domain.Entities;
+
+public class Order : IEntity
 {
     public Guid Id { get; init; }
     public string ProductName { get; set; }

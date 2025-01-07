@@ -26,12 +26,18 @@ public static class WebApplicationExtensions
 
         var groupv1 = app.MapGroup("/api/{version:apiVersion}")
             .AddEndpointFilter<BadRequestFilter>()
+            .AddFluentValidationAutoValidation()
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
+
+        var groupv1WithIdempotency = app.MapGroup("/api/{version:apiVersion}")
+            .AddEndpointFilter<BadRequestFilter>()
             .AddEndpointFilter<IdempotentAPIEndpointFilter>()
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
-        groupv1.MapPost("/order",
+        groupv1WithIdempotency.MapPost("/order",
             async (
                 CreateOrderRequest request,
                 ICommandHandler<CreateOrder, CreateOrderResult> handler,

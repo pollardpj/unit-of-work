@@ -20,9 +20,4 @@ public class OrderEventRepository(MyAppContext _context)
             .AsNoTracking()
             .ToListAsync(token);
     }
-
-    public override void SetOriginalRowVersion(OrderEvent entity, byte[] rowVersion)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Shared.Repository;
 
-public interface IRepository<T> where T : class
+public interface IRepository<T> where T : class, IEntity
 {
     IQueryable<T> GetIQueryable();
     ValueTask<List<T>> GetAllAsync();

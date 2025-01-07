@@ -25,7 +25,8 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
 
         modelBuilder.Entity<Order>()
             .Property(o => o.RowVersion)
-            .IsRowVersion();
+            .IsRowVersion()
+            .IsRequired();
 
         modelBuilder.Entity<OrderEvent>()
             .ToTable("OrderEvent")
@@ -33,6 +34,15 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
 
         modelBuilder.Entity<OrderEvent>()
             .Property(o => o.Payload)
+            .IsRequired();
+
+        modelBuilder.Entity<OrderEvent>()
+            .Property(o => o.OrderId)
+            .IsRequired();
+
+        modelBuilder.Entity<OrderEvent>()
+            .Property(o => o.RowVersion)
+            .IsRowVersion()
             .IsRequired();
     }
 }

@@ -2,12 +2,14 @@
 
 namespace Shared.Repository;
 
-public abstract class Repository<T> : IRepository<T> where T : class
+public abstract class Repository<T> : IRepository<T> where T : class, IEntity
 {
+    private readonly DbContext _context;
     private readonly DbSet<T> _dbSet;
 
-    protected Repository(DbContext _context)
+    protected Repository(DbContext context)
     {
+        _context = context;
         _dbSet = _context.Set<T>();
     }
 
@@ -26,7 +28,10 @@ public abstract class Repository<T> : IRepository<T> where T : class
         return await _dbSet.FindAsync(id);
     }
 
-    public abstract void SetOriginalRowVersion(T entity, byte[] rowVersion);
+    public void SetOriginalRowVersion(T entity, byte[] rowVersion)
+    {
+        _context.Entry(entity).Property(e => e.RowVersion).OriginalValue = rowVersion;
+    }
 
     public void Add(T entity)
     {

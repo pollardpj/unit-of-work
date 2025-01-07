@@ -27,9 +27,4 @@ public class OrderRepository(MyAppContext _context)
             .Select(o => o.Id)
             .AsAsyncEnumerable();
     }
-
-    public override void SetOriginalRowVersion(Order entity, byte[] rowVersion)
-    {
-        _context.Entry(entity).Property(e => e.RowVersion).OriginalValue = rowVersion;
-    }
 }
