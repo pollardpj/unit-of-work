@@ -40,13 +40,43 @@ public static class WebApplicationExtensions
 
                 return Results.Ok(new
                 {
-                    OrderReference = result.Reference,
+                    OrderId = result.Id,
                     OrderPrice = result.Price
                 });
 
             })
             .AddEndpointFilter<BadRequestFilter>()
             .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+            .AddFluentValidationAutoValidation()
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
+
+        app.MapPut("/api/{version:apiVersion}/orders/{orderId:guid}",
+            async (
+                Guid orderId,
+                UpdateOrderRequest request,
+                ICommandHandler<UpdateOrder, UpdateOrderResult> handler,
+                IMapper mapper,
+                CancellationToken token = default) =>
+            {
+                var command = mapper.Map<UpdateOrder>(request);
+                command.Id = orderId;
+
+                try
+                {
+                    var result = await handler.ExecuteAsync(command, token);
+
+                    return Results.Ok(new
+                    {
+                        OrderId = result.Id,
+                        OrderPrice = result.Price
+                    });
+                }
+                catch (ConflictException)
+                {
+                    return Results.Conflict();
+                }
+            })
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
@@ -94,8 +124,8 @@ public static class WebApplicationExtensions
                 ILogger<Program> logger,
                 CancellationToken token = default) =>
         {
-            logger.LogInformation("Order Created Message Received for {OrderReference}: {Order}",
-                order.Reference, JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
+            logger.LogInformation("Order Message Received for {OrderId}: {Order}",
+                order.Id, JsonSerializer.Serialize(order, JsonHelpers.DefaultOptions));
         });
 
         return app;

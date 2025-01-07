@@ -24,12 +24,12 @@ public class OrderSupervisorActor(
 
         _logger.LogInformation("Checking Orders");
 
-        var orderReferences = unitOfWork.OrderRepository
-            .GetOrderReferencesWithPendingEvents(DateTime.UtcNow.AddSeconds(-10));
+        var orderIds = unitOfWork.OrderRepository
+            .GetOrderIdsWithPendingEvents(DateTime.UtcNow.AddSeconds(-10));
 
-        await foreach (var orderReference in orderReferences)
+        await foreach (var orderId in orderIds)
         {
-            await _eventsService.TryPublishEvents(orderReference);
+            await _eventsService.TryPublishEvents(orderId);
         }
     }
 }

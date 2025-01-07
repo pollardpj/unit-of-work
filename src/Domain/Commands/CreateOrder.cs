@@ -7,6 +7,6 @@ public class CreateOrder
 
 public class CreateOrderResult
 {
-    public Guid Reference { get; init; }
+    public Guid Id { get; init; }
     public decimal Price { get; init; }
 }

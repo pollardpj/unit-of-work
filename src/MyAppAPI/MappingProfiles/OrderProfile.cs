@@ -12,6 +12,8 @@ public class OrderProfile : Profile
     public OrderProfile()
     {
         CreateMap<CreateOrderRequest, CreateOrder>();
+        CreateMap<UpdateOrderRequest, UpdateOrder>()
+            .ForMember(d => d.RowVersion, o => o.MapFrom(s => Convert.FromBase64String(s.RowVersion)));
 
         CreateMap<OrderEvent, OrderEventDto>();
 

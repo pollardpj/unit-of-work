@@ -4,7 +4,8 @@ public interface IRepository<T> where T : class
 {
     IQueryable<T> GetIQueryable();
     ValueTask<List<T>> GetAllAsync();
-    ValueTask<T> GetByIdAsync(int id);
+    ValueTask<T> GetByIdAsync(Guid id);
+    void SetOriginalRowVersion(T entity, byte[] rowVersion);
     void Add(T entity);
     void Update(T entity);
     void Delete(T entity);

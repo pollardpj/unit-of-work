@@ -6,5 +6,5 @@ namespace Domain.UnitOfWork;
 public interface IOrderEventRepository : IRepository<OrderEvent>
 {
     ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(
-        Guid orderReference, CancellationToken token = default);
+        Guid orderId, CancellationToken token = default);
 }

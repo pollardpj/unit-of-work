@@ -2,9 +2,9 @@
 
 public class Order
 {
-    public int Id { get; init; }
-    public Guid Reference { get; init; }
-    public string ProductName { get; init; }
-    public decimal Price { get; init; }
+    public Guid Id { get; init; }
+    public string ProductName { get; set; }
+    public decimal Price { get; set; }
     public ICollection<OrderEvent> Events { get; } = [];
+    public byte[] RowVersion { get; set; }
 }

@@ -11,8 +11,7 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
     {
         modelBuilder.Entity<Order>()
             .ToTable("Order")
-            .HasIndex(o => o.Reference, "UX_Order_Reference")
-                .IsUnique();
+            .Property("Id").ValueGeneratedNever();
 
         modelBuilder.Entity<Order>()
             .Property(o => o.ProductName)
@@ -24,10 +23,13 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
             .IsRequired()
             .HasPrecision(18, 2);
 
+        modelBuilder.Entity<Order>()
+            .Property(o => o.RowVersion)
+            .IsRowVersion();
+
         modelBuilder.Entity<OrderEvent>()
             .ToTable("OrderEvent")
-            .HasIndex(e => e.Reference, "UX_OrderEvent_Reference")
-                .IsUnique();
+            .Property("Id").ValueGeneratedNever();
 
         modelBuilder.Entity<OrderEvent>()
             .Property(o => o.Payload)

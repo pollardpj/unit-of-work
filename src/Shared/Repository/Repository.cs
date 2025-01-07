@@ -2,7 +2,7 @@
 
 namespace Shared.Repository;
 
-public class Repository<T> : IRepository<T> where T : class
+public abstract class Repository<T> : IRepository<T> where T : class
 {
     private readonly DbSet<T> _dbSet;
 
@@ -21,10 +21,12 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.ToListAsync();
     }
 
-    public async ValueTask<T> GetByIdAsync(int id)
+    public async ValueTask<T> GetByIdAsync(Guid id)
     {
         return await _dbSet.FindAsync(id);
     }
+
+    public abstract void SetOriginalRowVersion(T entity, byte[] rowVersion);
 
     public void Add(T entity)
     {

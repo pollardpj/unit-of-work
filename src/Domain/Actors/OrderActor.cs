@@ -15,15 +15,15 @@ public class OrderActor(
     IMyAppUnitOfWorkFactory _unitOfWorkFactory,
     ILogger<OrderActor> _logger) : Actor(_host), IOrderActor
 {
-    public async Task PublishEvents(Guid orderReference)
+    public async Task PublishEvents(Guid orderId)
     {
-        _logger.LogInformation("Registering Timer for {OrderReference}", orderReference);
+        _logger.LogInformation("Registering Timer for {OrderId}", orderId);
 
         await RegisterTimerAsync("PublishEvents", 
             nameof(ReceiveTimerAsync),
             Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PublishEventsTimerData
             {
-                OrderReference = orderReference
+                OrderId = orderId
             }, JsonHelpers.DefaultOptions)), 
             TimeSpan.FromMilliseconds(1), 
             TimeSpan.FromMilliseconds(-1));
@@ -39,9 +39,9 @@ public class OrderActor(
 
         using var unitOfWork = _unitOfWorkFactory.Create();
 
-        _logger.LogInformation("Processing Events for {OrderReference}", data.OrderReference);
+        _logger.LogInformation("Processing Events for {OrderId}", data.OrderId);
 
-        var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderReference);
+        var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderId);
 
         foreach (var orderEvent in orderEvents)
         {
@@ -58,13 +58,13 @@ public class OrderActor(
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Error on publishing event for order with reference {OrderReference}", data.OrderReference);
+                _logger.LogWarning(ex, "Error on publishing event for order with Id {OrderId}", data.OrderId);
             }
         }
     }
 
     private class PublishEventsTimerData
     {
-        public Guid OrderReference { get; set; }
+        public Guid OrderId { get; set; }
     }
 }

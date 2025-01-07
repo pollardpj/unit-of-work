@@ -7,13 +7,13 @@ namespace Domain.Services;
 
 public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEventsService
 {
-    public async ValueTask<bool> TryPublishEvents(Guid orderReference, CancellationToken token = default)
+    public async ValueTask<bool> TryPublishEvents(Guid orderId, CancellationToken token = default)
     {
         try
         {
-            var actorId = new ActorId($"order-{orderReference}");
+            var actorId = new ActorId($"order-{orderId}");
             var proxy = ActorProxy.Create<IOrderActor>(actorId, nameof(OrderActor));
-            await proxy.PublishEvents(orderReference);
+            await proxy.PublishEvents(orderId);
 
             return true;
         }

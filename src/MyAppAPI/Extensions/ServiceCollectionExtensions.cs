@@ -107,6 +107,7 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
+            .AddScoped<IValidator<UpdateOrderRequest>, UpdateOrderRequestValidator>()
             .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
             .AddFluentValidationAutoValidation();
 
