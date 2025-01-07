@@ -1,13 +1,12 @@
-﻿namespace Domain.Commands
-{
-    public class CreateOrder
-    {
-        public required Guid Reference { get; init; }
-        public required string ProductName { get; init; }
-    }
+﻿namespace Domain.Commands;
 
-    public class CreateOrderResult
-    {
-        public decimal Price { get; init; }
-    }
+public class CreateOrder
+{
+    public required Guid Reference { get; init; }
+    public required string ProductName { get; init; }
+}
+
+public class CreateOrderResult
+{
+    public decimal Price { get; init; }
 }

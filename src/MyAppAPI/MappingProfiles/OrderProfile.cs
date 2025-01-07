@@ -5,24 +5,23 @@ using Domain.Entities;
 using Domain.Queries;
 using MyAppAPI.Models;
 
-namespace MyAppAPI.MappingProfiles
+namespace MyAppAPI.MappingProfiles;
+
+public class OrderProfile : Profile
 {
-    public class OrderProfile : Profile
+    public OrderProfile()
     {
-        public OrderProfile()
-        {
-            CreateMap<CreateOrderRequest, CreateOrder>();
+        CreateMap<CreateOrderRequest, CreateOrder>();
 
-            CreateMap<OrderEvent, OrderEventDto>();
+        CreateMap<OrderEvent, OrderEventDto>();
 
-            CreateMap<Order, OrderDto>()
-                .ForMember(d => d.Events, o =>
-                {
-                    o.MapFrom(s => s.Events);
-                    o.ExplicitExpansion();
-                });
+        CreateMap<Order, OrderDto>()
+            .ForMember(d => d.Events, o =>
+            {
+                o.MapFrom(s => s.Events);
+                o.ExplicitExpansion();
+            });
 
-            CreateMap<GetOrdersRequest, GetOrders>();
-        }
+        CreateMap<GetOrdersRequest, GetOrders>();
     }
 }

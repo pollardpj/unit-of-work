@@ -1,15 +1,18 @@
-﻿using Asp.Versioning;
+﻿using System.Text.Json;
+using Asp.Versioning;
 using AutoMapper;
 using Dapr;
 using Domain.Commands;
 using Domain.Events;
 using Domain.Queries;
+using IdempotentAPI.MinimalAPI;
 using MyAppAPI.Models;
 using Shared.CQRS;
 using Shared.Exceptions;
+using Shared.Filters;
 using Shared.Json;
+using Shared.Validation;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using System.Text.Json;
 
 namespace MyAppAPI.Extensions;
 
@@ -42,6 +45,8 @@ public static class WebApplicationExtensions
                 });
 
             })
+            .AddEndpointFilter<BadRequestFilter>()
+            .AddEndpointFilter<IdempotentAPIEndpointFilter>()
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
@@ -60,10 +65,11 @@ public static class WebApplicationExtensions
                 }
                 catch (BadRequestException ex)
                 {
-                    return Results.BadRequest(ex.Details);
+                    return Results.Problem(ex.Message.GetProblemDetails());
                 }
 
             })
+            .AddEndpointFilter<BadRequestFilter>()
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);

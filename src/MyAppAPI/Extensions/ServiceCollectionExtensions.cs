@@ -1,4 +1,5 @@
-﻿using Asp.Versioning;
+﻿using System.Reflection;
+using Asp.Versioning;
 using Domain.Actors;
 using Domain.Commands.Handlers;
 using Domain.HostedServices;
@@ -6,6 +7,9 @@ using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
+using IdempotentAPI.Cache.DistributedCache.Extensions.DependencyInjection;
+using IdempotentAPI.Core;
+using IdempotentAPI.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Json;
 using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
@@ -14,17 +18,17 @@ using Shared.CQRS;
 using Shared.Json;
 using Shared.Observability;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using System.Reflection;
 
 namespace MyAppAPI.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMyAppServices(this IServiceCollection services)
+    public static IServiceCollection AddMyAppServices(this IServiceCollection services, IConfiguration config)
     {
         // Core:
 
         services
+            .AddIdempotency(config)
             .AddVersioning()
             .ConfigureJson();
 
@@ -33,11 +37,28 @@ public static class ServiceCollectionExtensions
         services
             .AddAutoMapper(Assembly.GetExecutingAssembly())
             .AddValidation()
-            .AddUnitOfWork()
+            .AddUnitOfWork(config)
             .AddCqrs()
             .AddScoped<IOrderEventsService, OrderEventsService>()
             .AddHostedService<OrderCheckingService>()
             .AddDaprServices();
+
+        return services;
+    }
+
+    private static IServiceCollection AddIdempotency(this IServiceCollection services, IConfiguration config)
+    {
+        services
+            .AddIdempotentMinimalAPI(new IdempotencyOptions
+            {
+                HeaderKeyName = "Idempotency-Key"
+            })
+            .AddIdempotentAPIUsingDistributedCache()
+            .AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = config.GetValue<string>("redis.connectionstring");
+                options.InstanceName = "MyApp";
+            });
 
         return services;
     }
@@ -69,13 +90,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddUnitOfWork(this IServiceCollection services)
+    private static IServiceCollection AddUnitOfWork(this IServiceCollection services, IConfiguration config)
     {
         services
             .AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
             {
                 return new MyAppUnitOfWorkFactory(
-                    "Server=(localdb)\\MSSQLLocalDB;Database=myapp",
+                    config.GetValue<string>("database.connectionstring"),
                     sp.GetService<ILoggerFactory>());
             });
 

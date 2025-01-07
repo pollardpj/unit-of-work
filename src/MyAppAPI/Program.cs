@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 using var bootstrapLogger = builder.ConfigureLogging();
 
-builder.Services.AddMyAppServices();
+builder.Services.AddMyAppServices(builder.Configuration);
 
 try
 {

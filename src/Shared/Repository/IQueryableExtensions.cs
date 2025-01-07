@@ -59,7 +59,7 @@ public static class IQueryableExtensions
         }
         catch (Exception ex) when (ex is ArgumentException or ODataException)
         {
-            throw new PagedQueryException(ex.Message, ex);
+            throw new BadRequestException(ex.Message, ex);
         }
     }
 }

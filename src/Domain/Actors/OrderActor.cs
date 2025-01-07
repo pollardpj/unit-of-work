@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using Dapr.Actors.Runtime;
 using Dapr.Client;
 using Domain.Enums;
@@ -5,8 +7,6 @@ using Domain.Events;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using Shared.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace Domain.Actors;
 

@@ -3,43 +3,42 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Domain.HostedServices
+namespace Domain.HostedServices;
+
+public class OrderCheckingService(
+    IServiceProvider _services, 
+    ILogger<OrderCheckingService> _logger) : BackgroundService
 {
-    public class OrderCheckingService(
-        IServiceProvider _services, 
-        ILogger<OrderCheckingService> _logger) : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken token)
     {
-        protected override async Task ExecuteAsync(CancellationToken token)
-        {
-            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
 
-            while (await timer.WaitForNextTickAsync(token))
+        while (await timer.WaitForNextTickAsync(token))
+        {
+            if (await TryInitialiseOrderChecking())
             {
-                if (await TryInitialiseOrderChecking())
-                {
-                    return;
-                }
+                return;
             }
         }
+    }
 
-        private async Task<bool> TryInitialiseOrderChecking()
+    private async Task<bool> TryInitialiseOrderChecking()
+    {
+        _logger.LogInformation("Starting Order Supervisor...");
+
+        using var scope = _services.CreateScope();
+
+        var service = scope.ServiceProvider.GetRequiredService<IOrderEventsService>();
+
+        var success = await service.TryInitialiseSupervisor();
+
+        if (success)
         {
-            _logger.LogInformation("Starting Order Supervisor...");
-
-            using var scope = _services.CreateScope();
-
-            var service = scope.ServiceProvider.GetRequiredService<IOrderEventsService>();
-
-            var success = await service.TryInitialiseSupervisor();
-
-            if (success)
-            {
-                _logger.LogInformation("Order Supervisor is running.");
-                return true;
-            }
-
-            _logger.LogWarning("Order Supervisor is not running, will try again...");
-            return false;
+            _logger.LogInformation("Order Supervisor is running.");
+            return true;
         }
+
+        _logger.LogWarning("Order Supervisor is not running, will try again...");
+        return false;
     }
 }

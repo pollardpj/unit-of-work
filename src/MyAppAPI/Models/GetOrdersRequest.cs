@@ -1,8 +1,7 @@
 ﻿using Shared.CQRS;
 
-namespace MyAppAPI.Models
+namespace MyAppAPI.Models;
+
+public class GetOrdersRequest : PagedQuery
 {
-    public class GetOrdersRequest : PagedQuery
-    {
-    }
 }
