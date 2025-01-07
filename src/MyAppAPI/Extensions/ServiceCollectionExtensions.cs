@@ -11,7 +11,6 @@ using IdempotentAPI.Cache.DistributedCache.Extensions.DependencyInjection;
 using IdempotentAPI.Core;
 using IdempotentAPI.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Json;
-using MyAppAPI.Models;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
@@ -115,9 +114,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddValidation(this IServiceCollection services)
     {
         services
-            .AddScoped<IValidator<CreateOrderRequest>, CreateOrderRequestValidator>()
-            .AddScoped<IValidator<UpdateOrderRequest>, UpdateOrderRequestValidator>()
-            .AddScoped<IValidator<GetOrdersRequest>, GetOrdersRequestValidator>()
+            .AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>()
             .AddFluentValidationAutoValidation();
 
         return services;
