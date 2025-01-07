@@ -28,10 +28,7 @@ public static class ServiceCollectionExtensions
         // Core:
 
         services
-            .AddProblemDetails()
-            .AddIdempotency(config)
-            .AddVersioning()
-            .ConfigureJson();
+            .AddCore(config);
 
         // Application:
 
@@ -43,6 +40,17 @@ public static class ServiceCollectionExtensions
             .AddScoped<IOrderEventsService, OrderEventsService>()
             .AddHostedService<OrderCheckingService>()
             .AddDaprServices();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCore(this IServiceCollection services, IConfiguration config)
+    {
+        services
+            .AddProblemDetails()
+            .AddIdempotency(config)
+            .AddVersioning()
+            .ConfigureJson();
 
         return services;
     }

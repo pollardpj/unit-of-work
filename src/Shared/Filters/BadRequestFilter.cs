@@ -10,7 +10,27 @@ public class BadRequestFilter : IEndpointFilter
     {
 		try
 		{
-			return await next(ctx);
+			var result = await next(ctx);
+
+            if (ctx.HttpContext.Response.StatusCode == 409 &&
+				ctx.HttpContext.Response.ContentLength == null)
+            {
+				if (result is string conflictMessage)
+				{
+					return Results.Conflict(conflictMessage.GetProblemDetails());
+				}
+
+				return Results.Conflict();
+            }
+
+            if (ctx.HttpContext.Response.StatusCode == 400 && 
+				ctx.HttpContext.Response.ContentLength == null && 
+				result is string badrequestMessage)
+			{
+				return Results.Problem(badrequestMessage.GetProblemDetails());
+			}
+
+			return result;
 		}
 		catch (ConflictException)
 		{
