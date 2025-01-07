@@ -9,9 +9,6 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
         RuleFor(r => r.ProductName)
             .NotEmpty()
             .MaximumLength(50);
-
-        RuleFor(r => r.Reference)
-            .NotEmpty();
     }
 }
 

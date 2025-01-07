@@ -17,7 +17,7 @@ public class CreateOrderHandler(
     {
         var order = new Order
         {
-            Reference = command.Reference,
+            Reference = Guid.CreateVersion7(),
             ProductName = command.ProductName,
             Price = 2.99M
         };
@@ -30,7 +30,7 @@ public class CreateOrderHandler(
             Type = OrderEventType.Created,
             Payload = JsonSerializer.Serialize(new OrderEventPayload
             {
-                Reference = order.Reference,
+                Reference = Guid.CreateVersion7(),
                 Type = OrderEventType.Created,
                 ProductName = order.ProductName,
                 Price = order.Price
@@ -43,10 +43,11 @@ public class CreateOrderHandler(
             await unitOfWork.FlushAsync(token);
         }
 
-        await _eventsService.TryPublishEvents(command.Reference, token);
+        await _eventsService.TryPublishEvents(order.Reference, token);
 
         return new CreateOrderResult
         {
+            Reference = order.Reference,
             Price = order.Price
         };
     }

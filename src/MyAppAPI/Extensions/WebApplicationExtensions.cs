@@ -40,7 +40,7 @@ public static class WebApplicationExtensions
 
                 return Results.Ok(new
                 {
-                    OrderReference = command.Reference,
+                    OrderReference = result.Reference,
                     OrderPrice = result.Price
                 });
 
