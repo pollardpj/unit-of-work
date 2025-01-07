@@ -18,6 +18,10 @@ public static class WebApplicationExtensions
 {
     public static WebApplication AddMyAppMiddleware(this WebApplication app)
     {
+        app
+            .UseExceptionHandler()
+            .UseStatusCodePages();
+
         app.MapDaprMiddleware();
 
         var versionSet = app.NewApiVersionSet()

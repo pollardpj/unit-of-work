@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         // Core:
 
         services
+            .AddProblemDetails()
             .AddIdempotency(config)
             .AddVersioning()
             .ConfigureJson();
