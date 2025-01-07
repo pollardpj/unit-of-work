@@ -38,7 +38,8 @@ public class UpdateOrderHandler(
                 Type = OrderEventType.Updated,
                 Payload = JsonSerializer.Serialize(new OrderEventPayload
                 {
-                    Id = eventId,
+                    EventId = eventId,
+                    OrderId = order.Id,
                     Type = OrderEventType.Updated,
                     ProductName = order.ProductName,
                     Price = order.Price

@@ -32,7 +32,8 @@ public class CreateOrderHandler(
             Type = OrderEventType.Created,
             Payload = JsonSerializer.Serialize(new OrderEventPayload
             {
-                Id = eventId,
+                EventId = eventId,
+                OrderId = order.Id,
                 Type = OrderEventType.Created,
                 ProductName = order.ProductName,
                 Price = order.Price
