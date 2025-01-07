@@ -8,10 +8,8 @@ using Domain.Queries;
 using IdempotentAPI.MinimalAPI;
 using MyAppAPI.Models;
 using Shared.CQRS;
-using Shared.Exceptions;
 using Shared.Filters;
 using Shared.Json;
-using Shared.Validation;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace MyAppAPI.Extensions;
@@ -20,14 +18,20 @@ public static class WebApplicationExtensions
 {
     public static WebApplication AddMyAppMiddleware(this WebApplication app)
     {
-        var versionSet = app.NewApiVersionSet()
-            .HasApiVersion(new ApiVersion(1))
-            .HasApiVersion(new ApiVersion(2))
-            .Build();
-
         app.MapDaprMiddleware();
 
-        app.MapPost("/api/{version:apiVersion}/order",
+        var versionSet = app.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1))
+            .Build();
+
+        var groupv1 = app.MapGroup("/api/{version:apiVersion}")
+            .AddEndpointFilter<BadRequestFilter>()
+            .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+            .AddFluentValidationAutoValidation()
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
+
+        groupv1.MapPost("/order",
             async (
                 CreateOrderRequest request,
                 ICommandHandler<CreateOrder, CreateOrderResult> handler,
@@ -44,14 +48,9 @@ public static class WebApplicationExtensions
                     OrderPrice = result.Price
                 });
 
-            })
-            .AddEndpointFilter<BadRequestFilter>()
-            .AddEndpointFilter<IdempotentAPIEndpointFilter>()
-            .AddFluentValidationAutoValidation()
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+            });
 
-        app.MapPut("/api/{version:apiVersion}/orders/{orderId:guid}",
+        groupv1.MapPut("/orders/{orderId:guid}",
             async (
                 Guid orderId,
                 UpdateOrderRequest request,
@@ -62,47 +61,26 @@ public static class WebApplicationExtensions
                 var command = mapper.Map<UpdateOrder>(request);
                 command.Id = orderId;
 
-                try
-                {
-                    var result = await handler.ExecuteAsync(command, token);
+                var result = await handler.ExecuteAsync(command, token);
 
-                    return Results.Ok(new
-                    {
-                        OrderId = result.Id,
-                        OrderPrice = result.Price
-                    });
-                }
-                catch (ConflictException)
+                return Results.Ok(new
                 {
-                    return Results.Conflict();
-                }
-            })
-            .AddFluentValidationAutoValidation()
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+                    OrderId = result.Id,
+                    OrderPrice = result.Price
+                });
 
-        app.MapGet("/api/{version:apiVersion}/orders",
+            });
+
+        groupv1.MapGet("/orders",
             async (
                 [AsParameters] GetOrdersRequest request,
                 IQueryHandler<GetOrders, GetOrdersResult> handler,
                 IMapper mapper,
                 CancellationToken token = default) =>
             {
-                try
-                {
-                    return Results.Ok(
-                        await handler.ExecuteAsync(mapper.Map<GetOrders>(request), token));
-                }
-                catch (BadRequestException ex)
-                {
-                    return Results.Problem(ex.Message.GetProblemDetails());
-                }
-
-            })
-            .AddEndpointFilter<BadRequestFilter>()
-            .AddFluentValidationAutoValidation()
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+                return Results.Ok(
+                    await handler.ExecuteAsync(mapper.Map<GetOrders>(request), token));
+            });
 
         return app;
     }

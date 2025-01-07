@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Shared.Exceptions;
 using Shared.Validation;
 
 namespace Shared.Filters;
@@ -11,7 +12,14 @@ public class BadRequestFilter : IEndpointFilter
 		{
 			return await next(ctx);
 		}
-		catch (Exception ex) when(ex is ArgumentException or ArgumentNullException or BadHttpRequestException)
+		catch (ConflictException)
+		{
+            return Results.Conflict();
+        }
+		catch (Exception ex) when(ex is ArgumentException or 
+										ArgumentNullException or 
+										BadHttpRequestException or
+										BadRequestException)
 		{
 			return Results.Problem(ex.Message.GetProblemDetails());
 		}
