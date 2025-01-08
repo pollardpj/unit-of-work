@@ -41,6 +41,12 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
             .IsRequired();
 
         modelBuilder.Entity<OrderEvent>()
+            .HasOne(e => e.Order)
+            .WithMany(e => e.Events)
+            .HasForeignKey(e => e.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrderEvent>()
             .Property(o => o.RowVersion)
             .IsRowVersion()
             .IsRequired();

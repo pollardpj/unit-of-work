@@ -11,7 +11,8 @@ public static class JsonHelpers
     {
         DefaultOptions = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
         };
 
         DefaultOptions.Converters.Add(new JsonStringEnumConverter());

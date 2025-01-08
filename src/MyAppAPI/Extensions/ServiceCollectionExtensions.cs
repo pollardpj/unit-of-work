@@ -59,7 +59,9 @@ public static class ServiceCollectionExtensions
         services
             .AddIdempotentMinimalAPI(new IdempotencyOptions
             {
-                HeaderKeyName = "Idempotency-Key"
+                HeaderKeyName = "Idempotency-Key",
+                ExpiresInMilliseconds = 1000 * 60 * 10,
+                DistributedCacheKeysPrefix = "Idempotency"
             })
             .AddIdempotentAPIUsingDistributedCache()
             .AddStackExchangeRedisCache(options =>
@@ -88,6 +90,7 @@ public static class ServiceCollectionExtensions
             .Configure<JsonOptions>(options =>
             {
                 options.SerializerOptions.PropertyNamingPolicy = JsonHelpers.DefaultOptions.PropertyNamingPolicy;
+                options.SerializerOptions.PropertyNameCaseInsensitive = JsonHelpers.DefaultOptions.PropertyNameCaseInsensitive;
 
                 foreach (var converter in JsonHelpers.DefaultOptions.Converters)
                 {

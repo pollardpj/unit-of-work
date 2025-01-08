@@ -11,5 +11,6 @@ public class OrderEvent : IEntity
     public string Payload { get; init; }
     public EventStatus Status { get; set; }
     public Guid OrderId { get; set; }
+    public Order Order { get; set; }
     public byte[] RowVersion { get; set; }
 }
