@@ -9,6 +9,11 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
         RuleFor(r => r.ProductName)
             .NotEmpty()
             .MaximumLength(50);
+
+        RuleFor(r => r.Email)
+            .NotEmpty()
+            .MaximumLength(255)
+            .EmailAddress();
     }
 }
 

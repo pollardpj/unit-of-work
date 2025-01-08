@@ -19,7 +19,9 @@ public class CreateOrderHandler(
         {
             Id = Guid.CreateVersion7(),
             ProductName = command.ProductName,
-            Price = 2.99M
+            Price = 2.99M,
+            CreatedTimestampUtc = DateTime.UtcNow,
+            Email = command.Email
         };
 
         var eventId = Guid.CreateVersion7();

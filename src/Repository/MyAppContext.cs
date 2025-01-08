@@ -24,6 +24,13 @@ public class MyAppContext(DbContextOptions<MyAppContext> _options) : DbContext(_
             .HasPrecision(18, 2);
 
         modelBuilder.Entity<Order>()
+            .Property(o => o.Email)
+            .HasMaxLength(255);
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.CreatedTimestampUtc);
+
+        modelBuilder.Entity<Order>()
             .Property(o => o.RowVersion)
             .IsRowVersion()
             .IsRequired();

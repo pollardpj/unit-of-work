@@ -3,6 +3,7 @@
 public class CreateOrder
 {
     public required string ProductName { get; init; }
+    public required string Email { get; init; }
 }
 
 public class CreateOrderResult
