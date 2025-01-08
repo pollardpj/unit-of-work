@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{88159D84-19A2-4A65-BA96-41FA7EA815A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{B368C911-DFC8-4768-B6FA-4A9532132D87}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{E5AADD93-D2A4-49DC-885A-FD36B9AC787B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logic", "Logic", "{4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}"
@@ -22,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		..\resources\pubsub.yaml = ..\resources\pubsub.yaml
 		..\resources\statestore.yaml = ..\resources\statestore.yaml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Migrations\Migrations.csproj", "{6B6A05D7-E9F4-4F69-82F1-24E44F474656}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,6 @@ Global
 		{88159D84-19A2-4A65-BA96-41FA7EA815A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88159D84-19A2-4A65-BA96-41FA7EA815A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88159D84-19A2-4A65-BA96-41FA7EA815A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B368C911-DFC8-4768-B6FA-4A9532132D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B368C911-DFC8-4768-B6FA-4A9532132D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B368C911-DFC8-4768-B6FA-4A9532132D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B368C911-DFC8-4768-B6FA-4A9532132D87}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECF10342-D81F-4E6E-AB75-855C32C64D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ECF10342-D81F-4E6E-AB75-855C32C64D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECF10342-D81F-4E6E-AB75-855C32C64D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +49,10 @@ Global
 		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.Build.0 = Debug
 		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.ActiveCfg = Release
 		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.Build.0 = Release
+		{6B6A05D7-E9F4-4F69-82F1-24E44F474656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B6A05D7-E9F4-4F69-82F1-24E44F474656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B6A05D7-E9F4-4F69-82F1-24E44F474656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B6A05D7-E9F4-4F69-82F1-24E44F474656}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,7 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{753736C1-FCF9-4B56-B6E4-D3909C9EF32F} = {4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}
 		{88159D84-19A2-4A65-BA96-41FA7EA815A5} = {4FAE07E0-FF43-49B0-B049-BDD60A5EA16B}
-		{B368C911-DFC8-4768-B6FA-4A9532132D87} = {E5AADD93-D2A4-49DC-885A-FD36B9AC787B}
 		{ECF10342-D81F-4E6E-AB75-855C32C64D7F} = {E5AADD93-D2A4-49DC-885A-FD36B9AC787B}
+		{6B6A05D7-E9F4-4F69-82F1-24E44F474656} = {E5AADD93-D2A4-49DC-885A-FD36B9AC787B}
 	EndGlobalSection
 EndGlobal
