@@ -49,14 +49,13 @@ public class UpdateOrderHandler(
             try
             {
                 await unitOfWork.FlushAsync(token);
+                await _eventsService.TryPublishEvents(order.Id, token);
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 throw new ConflictException("Error on updating Order", ex);
             }
         }
-
-        await _eventsService.TryPublishEvents(order.Id, token);
 
         return new UpdateOrderResult
         {

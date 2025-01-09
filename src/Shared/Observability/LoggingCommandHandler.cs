@@ -29,12 +29,20 @@ public class LoggingCommandHandler<TCommand, TResult>(
             _decorated.GetType().Name,
             JsonSerializer.Serialize(command, JsonHelpers.DefaultOptions));
 
-        var result = await _decorated.ExecuteAsync(command, token);
+        try
+        {
+            var result = await _decorated.ExecuteAsync(command, token);
 
-        _logger.LogDebug("Exited {CommandHandler} with {Result}",
-            _decorated.GetType().Name,
-            JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
+            _logger.LogDebug("Exited {CommandHandler} with {Result}",
+                _decorated.GetType().Name,
+                JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
 
-        return result;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception caught on {CommandHandler}", _decorated.GetType().Name);
+            throw;
+        }
     }
 }

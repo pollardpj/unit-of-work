@@ -10,7 +10,6 @@ public static class ObservabilityExtensions
     {
         var logger = new LoggerConfiguration()
            .ReadFrom.Configuration(builder.Configuration)
-           .Filter.ByExcluding("RequestPath like '%/healthz%'")
            .CreateLogger();
 
         Log.Logger = logger;

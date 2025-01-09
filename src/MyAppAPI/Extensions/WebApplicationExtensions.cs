@@ -107,14 +107,14 @@ public static class WebApplicationExtensions
 
         // Dapr subscription in [Topic] routes orders topic to this route
         app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")]
-        (
+            (
                 OrderEventPayload @event,
                 ILogger<Program> logger,
                 CancellationToken token = default) =>
-        {
-            logger.LogInformation("Order Event Received for {OrderId}: {Event}",
-                @event.OrderId, JsonSerializer.Serialize(@event, JsonHelpers.DefaultOptions));
-        });
+            {
+                logger.LogInformation("Order Event Received for {OrderId}: {Event}",
+                    @event.OrderId, JsonSerializer.Serialize(@event, JsonHelpers.DefaultOptions));
+            });
 
         return app;
     }

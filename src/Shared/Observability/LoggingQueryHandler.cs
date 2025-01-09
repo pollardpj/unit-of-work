@@ -16,12 +16,20 @@ public class LoggingQueryHandler<TQuery, TResult>(
             _decorated.GetType().Name,
             JsonSerializer.Serialize(query, JsonHelpers.DefaultOptions));
 
-        var result = await _decorated.ExecuteAsync(query, token);
+        try
+        {
+            var result = await _decorated.ExecuteAsync(query, token);
 
-        _logger.LogDebug("Exited {QueryHandler} with {Result}",
-            _decorated.GetType().Name,
-            JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
+            _logger.LogDebug("Exited {QueryHandler} with {Result}",
+                _decorated.GetType().Name,
+                JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
 
-        return result;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception caught on {QueryHandler}", _decorated.GetType().Name);
+            throw;
+        }
     }
 }
