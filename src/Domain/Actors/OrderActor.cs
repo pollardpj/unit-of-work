@@ -50,7 +50,11 @@ public class OrderActor(
 
             try
             {
-                await client.PublishEventAsync("order-pubsub", "order-event", payload);
+                await client.PublishEventAsync("order-pubsub", "order-event", payload, new Dictionary<string, string>
+                {
+                    ["cloudevent.id"] = orderEvent.Id.ToString(),
+                    ["cloudevent.type"] = "uk.co.mpgen.myapp.orderevent.v1"
+                });
 
                 orderEvent.Status = EventStatus.Published;
                 unitOfWork.OrderEventRepository.Update(orderEvent);

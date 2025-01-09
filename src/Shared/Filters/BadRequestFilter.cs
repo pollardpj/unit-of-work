@@ -17,12 +17,6 @@ public class BadRequestFilter : IEndpointFilter
 
 			return (ctx.HttpContext.Response, Result: result) switch 
 			{
-                { Response.StatusCode: 409, Response.HasStarted: false, Result: string detail } => 
-					Results.Problem(detail, statusCode: 409),
-
-                { Response.StatusCode: 409, Response.HasStarted: false } => 
-					Results.Conflict(),
-
                 { Response.StatusCode: 400, Response.HasStarted: false, Result: string detail } =>
                     Results.ValidationProblem(new Dictionary<string, string[]> { ["Summary"] = [detail] }),
 

@@ -28,13 +28,13 @@ public static class WebApplicationExtensions
             .HasApiVersion(new ApiVersion(1))
             .Build();
 
-        var groupv1 = app.MapGroup("/api/{version:apiVersion}")
+        var groupv1 = app.MapGroup("/api/v{version:apiVersion}")
             .AddEndpointFilter<BadRequestFilter>()
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
-        var groupv1WithIdempotency = app.MapGroup("/api/{version:apiVersion}")
+        var groupv1WithIdempotency = app.MapGroup("/api/v{version:apiVersion}")
             .AddEndpointFilter<BadRequestFilter>()
             .AddEndpointFilter<IdempotentAPIEndpointFilter>()
             .AddFluentValidationAutoValidation()
@@ -106,13 +106,13 @@ public static class WebApplicationExtensions
         app.MapActorsHandlers();
 
         // Dapr subscription in [Topic] routes orders topic to this route
-        app.MapPost("/orderevent", [Topic("order-pubsub", "order-event")]
+        app.MapPost("/orderevent/v1", [Topic("order-pubsub", "order-event", "event.type.endsWith(\"v1\")", 1)]
             (
                 OrderEventPayload @event,
                 ILogger<Program> logger,
                 CancellationToken token = default) =>
             {
-                logger.LogInformation("Order Event Received for {OrderId}: {Event}",
+                logger.LogInformation("Version 1 Order Event Received for {OrderId}: {Event}",
                     @event.OrderId, JsonSerializer.Serialize(@event, JsonHelpers.DefaultOptions));
             });
 
