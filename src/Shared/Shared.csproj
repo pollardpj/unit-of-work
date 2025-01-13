@@ -3,20 +3,35 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+        
+        <!-- NuGet Package Information -->
+        <PackageId>MPGEN.Shared</PackageId>
+        <Authors>Phil Pollard</Authors>
+        <Company>MPGEN</Company>
+        <Description>Shared libraries and utilities for MyApp</Description>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <!-- MinVer Settings -->
+        <MinVerDefaultPreReleaseIdentifiers>alpha</MinVerDefaultPreReleaseIdentifiers>
+        <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
+
     </PropertyGroup>
 
     <ItemGroup>
-		<PackageReference Include="AutoMapper" Version="13.0.1" />
-		<PackageReference Include="Community.OData.Linq" Version="2.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
-		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-		<PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-		<PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
-		<PackageReference Include="SerilogTracing" Version="2.3.1" />
-		<PackageReference Include="SerilogTracing.Expressions" Version="2.3.1" />
-		<PackageReference Include="SerilogTracing.Instrumentation.AspNetCore" Version="2.3.1" />
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="Community.OData.Linq" Version="2.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+        <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="All" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
+        <PackageReference Include="SerilogTracing" Version="2.3.1" />
+        <PackageReference Include="SerilogTracing.Expressions" Version="2.3.1" />
+        <PackageReference Include="SerilogTracing.Instrumentation.AspNetCore" Version="2.3.1" />
     </ItemGroup>
 
 </Project>
