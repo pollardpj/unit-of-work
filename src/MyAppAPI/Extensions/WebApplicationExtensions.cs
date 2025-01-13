@@ -41,7 +41,7 @@ public static class WebApplicationExtensions
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
-        groupv1WithIdempotency.MapPost("/order",
+        groupv1WithIdempotency.MapPost("/orders",
             async (
                 CreateOrderRequest request,
                 ICommandHandler<CreateOrder, CreateOrderResult> handler,

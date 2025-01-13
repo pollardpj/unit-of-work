@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Shared.CQRS;
 using Shared.Json;
+using Shared.Utils;
 
 namespace Shared.Observability;
 
@@ -13,7 +14,7 @@ public class LoggingQueryHandler<TQuery, TResult>(
     public async ValueTask<TResult> ExecuteAsync(TQuery query, CancellationToken token = default)
     {
         _logger.LogDebug("Entered {QueryHandler} with {Query}",
-            _decorated.GetType().Name,
+            TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
             JsonSerializer.Serialize(query, JsonHelpers.DefaultOptions));
 
         try
@@ -21,14 +22,14 @@ public class LoggingQueryHandler<TQuery, TResult>(
             var result = await _decorated.ExecuteAsync(query, token);
 
             _logger.LogDebug("Exited {QueryHandler} with {Result}",
-                _decorated.GetType().Name,
+                TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
                 JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
 
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception caught on {QueryHandler}", _decorated.GetType().Name);
+            _logger.LogError(ex, "Exception caught on {QueryHandler}", TypeUtils.GetUnderlyingTypeName(_decorated.GetType()));
             throw;
         }
     }

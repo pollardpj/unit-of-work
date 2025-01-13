@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Shared.CQRS;
 using Shared.Json;
+using Shared.Utils;
 
 namespace Shared.Observability;
 
@@ -12,7 +13,7 @@ ILogger<LoggingCommandHandler<TCommand>> _logger) : ICommandHandler<TCommand>
     public async ValueTask ExecuteAsync(TCommand command, CancellationToken token = default)
     {
         _logger.LogDebug("Entered {CommandHandler} with {Command}",
-            _decorated.GetType().Name,
+            TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
             JsonSerializer.Serialize(command, JsonHelpers.DefaultOptions));
 
         await _decorated.ExecuteAsync(command, token);
@@ -26,7 +27,7 @@ public class LoggingCommandHandler<TCommand, TResult>(
     public async ValueTask<TResult> ExecuteAsync(TCommand command, CancellationToken token = default)
     {
         _logger.LogDebug("Entered {CommandHandler} with {Command}", 
-            _decorated.GetType().Name,
+            TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
             JsonSerializer.Serialize(command, JsonHelpers.DefaultOptions));
 
         try
@@ -34,7 +35,7 @@ public class LoggingCommandHandler<TCommand, TResult>(
             var result = await _decorated.ExecuteAsync(command, token);
 
             _logger.LogDebug("Exited {CommandHandler} with {Result}",
-                _decorated.GetType().Name,
+                TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
                 JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
 
             return result;

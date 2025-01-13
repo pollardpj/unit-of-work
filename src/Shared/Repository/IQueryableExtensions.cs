@@ -20,6 +20,7 @@ public static class IQueryableExtensions
     {
         try
         {
+            // Apply OData filtering if specified
             if (!string.IsNullOrWhiteSpace(query.Filter))
             {
                 queryable = queryable.OData()
@@ -27,8 +28,10 @@ public static class IQueryableExtensions
                     .ToOriginalQuery();
             }
 
+            // Get total count before pagination
             var totalCount = await queryable.CountAsync(token);
 
+            // Apply OData ordering if specified
             if (!string.IsNullOrWhiteSpace(query.OrderBy))
             {
                 queryable = queryable.OData()
@@ -36,30 +39,29 @@ public static class IQueryableExtensions
                     .ToOriginalQuery();
             }
 
-            var membersToExpand = new List<string>();
+            // Parse expand parameters
+            var membersToExpand = !string.IsNullOrWhiteSpace(query.Expand)
+                ? query.Expand.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
+                : new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(query.Expand))
-            {
-                membersToExpand = [.. query.Expand.Split(',', 
-                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
-            }
-
-            var projectedOrders = queryable
+            // Apply pagination, projection and execute query
+            var items = await queryable
                 .Skip(query.Skip ?? 0)
-                .Take(query.Top ?? 100)
+                .Take(Math.Min(query.Top ?? 100, 1000)) // Add max limit of 1000 items
                 .AsNoTracking()
                 .ProjectTo<TDto>(
-                    mapper.ConfigurationProvider, null, membersToExpand: [.. membersToExpand]);
+                    mapper.ConfigurationProvider, null, membersToExpand: [.. membersToExpand])
+                .ToListAsync(token);
 
             return new TPagedResult
             {
                 TotalCount = totalCount,
-                Items = await projectedOrders.ToListAsync(token)
+                Items = items
             };
         }
         catch (Exception ex) when (ex is ArgumentException or ODataException)
         {
-            throw new BadRequestException(ex.Message, ex);
+            throw new BadRequestException($"Invalid query parameters: {ex.Message}", ex);
         }
     }
 }
