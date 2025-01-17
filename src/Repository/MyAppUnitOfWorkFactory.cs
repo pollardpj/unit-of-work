@@ -1,22 +1,14 @@
 ﻿using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Repository;
 
 public class MyAppUnitOfWorkFactory(
-    string _connectionString, 
-    ILoggerFactory _loggerFactory) : IMyAppUnitOfWorkFactory
+    IDbContextFactory<MyAppContext> _contextFactory) : IMyAppUnitOfWorkFactory
 {
-    private readonly DbContextOptions<MyAppContext> _options = 
-        new DbContextOptionsBuilder<MyAppContext>()
-            .UseSqlServer(_connectionString)
-            .UseLoggerFactory(_loggerFactory)
-            .Options;
-
-    public IMyAppUnitOfWork Create()
+    public async ValueTask<IMyAppUnitOfWork> CreateAsync()
     {
-        var context = new MyAppContext(_options);
+        var context = await _contextFactory.CreateDbContextAsync();
 
         return new MyAppUnitOfWork(
             context, 

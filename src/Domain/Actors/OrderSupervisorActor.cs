@@ -20,7 +20,7 @@ public class OrderSupervisorActor(
 
     public async Task ReceiveTimerAsync(byte[] state)
     {
-        using var unitOfWork = _unitOfWorkFactory.Create();
+        await using var unitOfWork = await _unitOfWorkFactory.CreateAsync();
 
         _logger.LogInformation("Checking Orders");
 

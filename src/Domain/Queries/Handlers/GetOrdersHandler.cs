@@ -13,7 +13,7 @@ public class GetOrdersHandler(
 {
     public async ValueTask<GetOrdersResult> ExecuteAsync(GetOrders query, CancellationToken token = default)
     {
-        using var unitOfWork = _unitOfWorkFactory.Create();
+        await using var unitOfWork = await _unitOfWorkFactory.CreateAsync();
 
         var orders = unitOfWork.OrderRepository.GetIQueryable();
 

@@ -19,9 +19,9 @@ public class UpdateOrderHandler(
     {
         Order order = null;
 
-        using (var unitOfWork = _unitOfWorkFactory.Create())
+        await using (var unitOfWork = await _unitOfWorkFactory.CreateAsync())
         {
-            order = await unitOfWork.OrderRepository.GetByIdAsync(command.Id);
+            order = await unitOfWork.OrderRepository.GetByIdAsync(command.Id, token);
 
             order.ProductName = command.ProductName;
             order.Price+= 1M;

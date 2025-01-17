@@ -2,5 +2,5 @@
 
 public interface IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
 {
-    TUnitOfWork Create();
+    ValueTask<TUnitOfWork> CreateAsync();
 }

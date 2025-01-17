@@ -37,9 +37,9 @@ public class OrderActor(
             .UseJsonSerializationOptions(JsonHelpers.DefaultOptions)
             .Build();
 
-        using var unitOfWork = _unitOfWorkFactory.Create();
-
         _logger.LogInformation("Processing Events for {OrderId}", data.OrderId);
+
+        await using var unitOfWork = await _unitOfWorkFactory.CreateAsync();
 
         var orderEvents = await unitOfWork.OrderEventRepository.GetPendingEvents(data.OrderId);
 

@@ -11,6 +11,7 @@ using IdempotentAPI.Cache.DistributedCache.Extensions.DependencyInjection;
 using IdempotentAPI.Core;
 using IdempotentAPI.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
@@ -103,13 +104,13 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services, IConfiguration config)
     {
+        services.AddDbContextFactory<MyAppContext>(options =>
+        {
+            options.UseSqlServer(config.GetValue<string>("database.connectionstring"));
+        });
+
         services
-            .AddSingleton<IMyAppUnitOfWorkFactory>(sp =>
-            {
-                return new MyAppUnitOfWorkFactory(
-                    config.GetValue<string>("database.connectionstring"),
-                    sp.GetService<ILoggerFactory>());
-            });
+            .AddSingleton<IMyAppUnitOfWorkFactory, MyAppUnitOfWorkFactory>();
 
         return services;
     }

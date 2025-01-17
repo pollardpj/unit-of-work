@@ -23,7 +23,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IEntity
         return await _dbSet.ToListAsync();
     }
 
-    public async ValueTask<T> GetByIdAsync(Guid id)
+    public async ValueTask<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync(id);
     }

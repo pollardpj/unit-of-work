@@ -41,14 +41,18 @@ public static class WebApplicationExtensions
         WebApplication app, 
         ApiVersionSet versionSet)
     {
-        var baseGroup = app.MapGroup("/api/v{version:apiVersion}")
+        var standardGroup = app.MapGroup("/api/v{version:apiVersion}")
             .AddEndpointFilter<BadRequestFilter>()
             .AddFluentValidationAutoValidation()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
-        var standardGroup = baseGroup;
-        var idempotentGroup = baseGroup.AddEndpointFilter<IdempotentAPIEndpointFilter>();
+        var idempotentGroup = app.MapGroup("/api/v{version:apiVersion}")
+            .AddEndpointFilter<BadRequestFilter>()
+            .AddEndpointFilter<IdempotentAPIEndpointFilter>()
+            .AddFluentValidationAutoValidation()
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
 
         return (standardGroup, idempotentGroup);
     }
@@ -60,6 +64,7 @@ public static class WebApplicationExtensions
         idempotentGroup.MapPost("/orders", HandleCreateOrder);
         standardGroup.MapPut("/orders/{orderId:guid}", HandleUpdateOrder);
         standardGroup.MapGet("/orders", HandleGetOrders);
+        standardGroup.MapGet("/orders/{orderId:guid}", HandleGetOrder);
     }
 
     private static async Task<IResult> HandleCreateOrder(
@@ -100,6 +105,18 @@ public static class WebApplicationExtensions
             await handler.ExecuteAsync(mapper.Map<GetOrders>(request), token));
     }
 
+    private static async Task<IResult> HandleGetOrder(
+        Guid orderId,
+        IQueryHandler<GetOrder, GetOrderResult> handler,
+        CancellationToken token = default)
+    {
+        var result = await handler.ExecuteAsync(new GetOrder { Id = orderId }, token);
+        
+        return result.Order is null 
+            ? Results.NotFound() 
+            : Results.Ok(result.Order);
+    }
+
     private static WebApplication MapDaprMiddleware(this WebApplication app)
     {
         app.UseCloudEvents();
@@ -110,6 +127,8 @@ public static class WebApplicationExtensions
             [Topic("order-pubsub", "order-event", "event.type.endsWith(\"v1\")", 1)]
             async (OrderEventPayload @event, ILogger<Program> logger, CancellationToken token) =>
             {
+                await Task.Yield();
+
                 logger.LogInformation("Version 1 Order Event Received for {OrderId}: {Event}",
                     @event.OrderId, 
                     JsonSerializer.Serialize(@event, JsonHelpers.DefaultOptions));

@@ -42,7 +42,7 @@ public class CreateOrderHandler(
             }, JsonHelpers.DefaultOptions)
         });
 
-        using (var unitOfWork = _unitOfWorkFactory.Create())
+        await using (var unitOfWork = await _unitOfWorkFactory.CreateAsync())
         {
             unitOfWork.OrderRepository.Add(order);
             await unitOfWork.FlushAsync(token);
