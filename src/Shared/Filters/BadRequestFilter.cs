@@ -5,8 +5,6 @@ namespace Shared.Filters;
 
 public class BadRequestFilter : IEndpointFilter
 {
-    public string Result { get; private set; }
-
     public async ValueTask<object> InvokeAsync(EndpointFilterInvocationContext ctx, EndpointFilterDelegate next)
     {
         try

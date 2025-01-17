@@ -12,7 +12,7 @@ public class OrderEventRepository(MyAppContext _context)
     public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(
         Guid orderId, CancellationToken token = default)
     {
-        return await _context.Set<Order>()
+        return await _context.Orders
             .Where(o => o.Id == orderId)
             .SelectMany(o => o.Events
                 .Where(e => e.Status == EventStatus.Pending))

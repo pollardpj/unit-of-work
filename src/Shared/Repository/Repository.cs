@@ -25,7 +25,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IEntity
 
     public async ValueTask<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync([id], cancellationToken);
     }
 
     public void SetOriginalRowVersion(T entity, byte[] rowVersion)

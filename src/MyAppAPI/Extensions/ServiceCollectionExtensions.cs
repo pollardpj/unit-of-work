@@ -109,6 +109,15 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(config.GetValue<string>("database.connectionstring"));
         });
 
+        services.AddSingleton<Func<MyAppContext, MyAppRepositories>>(_ =>
+        {
+            return ctx => new MyAppRepositories
+            {
+                OrderEventRepository = new OrderEventRepository(ctx),
+                OrderRepository = new OrderRepository(ctx)
+            };
+        });
+
         services
             .AddSingleton<IMyAppUnitOfWorkFactory, MyAppUnitOfWorkFactory>();
 

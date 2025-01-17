@@ -12,7 +12,7 @@ public class OrderRepository(MyAppContext _context)
     public async ValueTask<Order> GetOrderWithEvents(
         Guid id, CancellationToken token = default)
     {
-        return await _context.Set<Order>()
+        return await _context.Orders
             .Include(o => o.Events)
             .FirstOrDefaultAsync(o => o.Id == id, token);
     }
@@ -20,7 +20,7 @@ public class OrderRepository(MyAppContext _context)
     public IAsyncEnumerable<Guid> GetOrderIdsWithPendingEvents(
         DateTime createdBeforeTimestampUtc, CancellationToken token = default)
     {
-        return _context.Set<Order>()
+        return _context.Orders
             .Where(o => o.Events.Any(e => e.Status == EventStatus.Pending && 
                                           e.CreatedTimestampUtc < createdBeforeTimestampUtc))
             .OrderBy(o => o.Id)

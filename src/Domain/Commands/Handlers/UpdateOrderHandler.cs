@@ -17,7 +17,7 @@ public class UpdateOrderHandler(
 {
     public async ValueTask<UpdateOrderResult> ExecuteAsync(UpdateOrder command, CancellationToken token = default)
     {
-        Order order = null;
+        Order order;
 
         await using (var unitOfWork = await _unitOfWorkFactory.CreateAsync())
         {
