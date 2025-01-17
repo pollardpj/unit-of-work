@@ -2,6 +2,4 @@
 
 namespace MyAppAPI.Models;
 
-public class GetOrdersRequest : PagedQuery
-{
-}
+public class GetOrdersRequest : PagedQuery;

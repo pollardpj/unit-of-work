@@ -2,6 +2,4 @@
 
 namespace Domain.UnitOfWork;
 
-public interface IMyAppUnitOfWorkFactory : IUnitOfWorkFactory<IMyAppUnitOfWork>
-{
-}
+public interface IMyAppUnitOfWorkFactory : IUnitOfWorkFactory<IMyAppUnitOfWork>;

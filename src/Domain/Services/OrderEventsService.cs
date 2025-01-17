@@ -28,7 +28,7 @@ public class OrderEventsService(ILogger<OrderEventsService> _logger) : IOrderEve
     {
         try
         {
-            var actorId = new ActorId($"order-supervisor");
+            var actorId = new ActorId("order-supervisor");
             var proxy = ActorProxy.Create<IOrderSupervisorActor>(actorId, nameof(OrderSupervisorActor));
             await proxy.StartCheckingOrders();
 

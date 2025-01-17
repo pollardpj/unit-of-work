@@ -42,7 +42,7 @@ public static class IQueryableExtensions
             // Parse expand parameters
             var membersToExpand = !string.IsNullOrWhiteSpace(query.Expand)
                 ? query.Expand.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
-                : new List<string>();
+                : [];
 
             // Apply pagination, projection and execute query
             var items = await queryable

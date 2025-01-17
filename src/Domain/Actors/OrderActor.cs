@@ -69,6 +69,6 @@ public class OrderActor(
 
     private class PublishEventsTimerData
     {
-        public Guid OrderId { get; set; }
+        public Guid OrderId { get; init; }
     }
 }

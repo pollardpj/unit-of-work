@@ -3,10 +3,6 @@ using Shared.CQRS;
 
 namespace Domain.Queries;
 
-public class GetOrders : PagedQuery, IQuery<GetOrdersResult>
-{
-}
+public class GetOrders : PagedQuery, IQuery<GetOrdersResult>;
 
-public class GetOrdersResult : PagedResult<OrderDto>
-{
-}
+public class GetOrdersResult : PagedResult<OrderDto>;
