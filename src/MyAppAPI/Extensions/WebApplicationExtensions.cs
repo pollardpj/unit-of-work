@@ -10,7 +10,7 @@ using IdempotentAPI.MinimalAPI;
 using MyAppAPI.Models;
 using Shared.CQRS;
 using Shared.Filters;
-using Shared.Json;
+using Shared.Utils;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace MyAppAPI.Extensions;

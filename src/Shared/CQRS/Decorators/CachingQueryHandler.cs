@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
-using Shared.Json;
 using Shared.Utils;
 
 namespace Shared.CQRS.Decorators;

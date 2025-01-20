@@ -7,7 +7,7 @@ using Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Shared.CQRS;
 using Shared.Exceptions;
-using Shared.Json;
+using Shared.Utils;
 
 namespace Domain.Commands.Handlers;
 

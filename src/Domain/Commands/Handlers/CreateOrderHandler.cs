@@ -5,7 +5,7 @@ using Domain.Events;
 using Domain.Services;
 using Domain.UnitOfWork;
 using Shared.CQRS;
-using Shared.Json;
+using Shared.Utils;
 
 namespace Domain.Commands.Handlers;
 

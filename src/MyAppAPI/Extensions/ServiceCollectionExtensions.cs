@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Asp.Versioning;
 using Domain.Actors;
 using Domain.Commands;
 using Domain.Commands.Handlers;
@@ -9,18 +8,12 @@ using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
 using FluentValidation;
-using IdempotentAPI.Cache.DistributedCache.Extensions.DependencyInjection;
-using IdempotentAPI.Core;
-using IdempotentAPI.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using MyAppAPI.Models.Validators;
 using Repository;
 using Shared.CQRS;
 using Shared.CQRS.Decorators;
-using Shared.Json;
-using Shared.Observability;
+using Shared.Extensions;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace MyAppAPI.Extensions;
@@ -41,75 +34,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IOrderEventsService, OrderEventsService>()
             .AddHostedService<OrderCheckingService>()
             .AddDaprServices();
-
-        return services;
-    }
-
-    private static IServiceCollection AddCore(this IServiceCollection services, IConfiguration config)
-    {
-#pragma warning disable EXTEXP0018
-        services
-            .AddProblemDetails()
-            .AddIdempotency(config)
-            .AddVersioning()
-            .ConfigureJson()
-            .AddHybridCache(options =>
-            {
-                // Default timeouts
-                options.DefaultEntryOptions = new HybridCacheEntryOptions
-                {
-                    Expiration = TimeSpan.FromMinutes(30),
-                    LocalCacheExpiration = TimeSpan.FromMinutes(30)
-                };
-            });
-#pragma warning restore EXTEXP0018
-
-        return services;
-    }
-
-    private static IServiceCollection AddIdempotency(this IServiceCollection services, IConfiguration config)
-    {
-        services
-            .AddIdempotentMinimalAPI(new IdempotencyOptions
-            {
-                HeaderKeyName = "Idempotency-Key",
-                ExpiresInMilliseconds = 1000 * 60 * 10,
-                DistributedCacheKeysPrefix = "Idempotency"
-            })
-            .AddIdempotentAPIUsingDistributedCache()
-            .AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = config.GetValue<string>("redis.connectionstring");
-                options.InstanceName = "MyApp";
-            });
-
-        return services;
-    }
-
-    private static IServiceCollection AddVersioning(this IServiceCollection services)
-    {
-        services
-            .AddApiVersioning(options =>
-            {
-                options.ApiVersionReader = new UrlSegmentApiVersionReader();
-            });
-
-        return services;
-    }
-
-    private static IServiceCollection ConfigureJson(this IServiceCollection services)
-    {
-        services
-            .Configure<JsonOptions>(options =>
-            {
-                options.SerializerOptions.PropertyNamingPolicy = JsonHelpers.DefaultOptions.PropertyNamingPolicy;
-                options.SerializerOptions.PropertyNameCaseInsensitive = JsonHelpers.DefaultOptions.PropertyNameCaseInsensitive;
-
-                foreach (var converter in JsonHelpers.DefaultOptions.Converters)
-                {
-                    options.SerializerOptions.Converters.Add(converter);
-                }
-            });
 
         return services;
     }

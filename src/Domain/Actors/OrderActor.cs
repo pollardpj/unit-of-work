@@ -6,7 +6,7 @@ using Domain.Enums;
 using Domain.Events;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Logging;
-using Shared.Json;
+using Shared.Utils;
 
 namespace Domain.Actors;
 
