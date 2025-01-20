@@ -3,6 +3,7 @@ using Asp.Versioning;
 using Domain.Actors;
 using Domain.Commands.Handlers;
 using Domain.HostedServices;
+using Domain.Queries;
 using Domain.Queries.Handlers;
 using Domain.Services;
 using Domain.UnitOfWork;
@@ -12,8 +13,10 @@ using IdempotentAPI.Core;
 using IdempotentAPI.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using MyAppAPI.Models.Validators;
 using Repository;
+using Shared.Caching;
 using Shared.CQRS;
 using Shared.Json;
 using Shared.Observability;
@@ -25,14 +28,11 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMyAppServices(this IServiceCollection services, IConfiguration config)
     {
-        // Core:
-
         services
-            .AddCore(config);
+            .AddCore(config)
 
-        // Application:
+            // Application:
 
-        services
             .AddAutoMapper(Assembly.GetExecutingAssembly())
             .AddValidation()
             .AddUnitOfWork(config)
@@ -46,11 +46,22 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddCore(this IServiceCollection services, IConfiguration config)
     {
+#pragma warning disable EXTEXP0018
         services
             .AddProblemDetails()
             .AddIdempotency(config)
             .AddVersioning()
-            .ConfigureJson();
+            .ConfigureJson()
+            .AddHybridCache(options =>
+            {
+                // Default timeouts
+                options.DefaultEntryOptions = new HybridCacheEntryOptions
+                {
+                    Expiration = TimeSpan.FromMinutes(30),
+                    LocalCacheExpiration = TimeSpan.FromMinutes(30)
+                };
+            });
+#pragma warning restore EXTEXP0018
 
         return services;
     }
@@ -171,6 +182,7 @@ public static class ServiceCollectionExtensions
                      .WithScopedLifetime());
 
         services
+            .Decorate(typeof(IQueryHandler<GetOrder, GetOrderResult>), typeof(CachingQueryHandler<GetOrder, GetOrderResult>)) 
             .Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>))
             .Decorate(typeof(IQueryHandler<,>), typeof(TracingQueryHandler<,>));
 
