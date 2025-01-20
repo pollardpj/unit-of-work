@@ -1,10 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Shared.CQRS;
 using Shared.Json;
 using Shared.Utils;
 
-namespace Shared.Observability;
+namespace Shared.CQRS.Decorators;
 
 public class LoggingCommandHandler<TCommand>(
 ICommandHandler<TCommand> _decorated,

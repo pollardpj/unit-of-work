@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Domain.Actors;
+using Domain.Commands;
 using Domain.Commands.Handlers;
 using Domain.HostedServices;
 using Domain.Queries;
@@ -16,8 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using MyAppAPI.Models.Validators;
 using Repository;
-using Shared.Caching;
 using Shared.CQRS;
+using Shared.CQRS.Decorators;
 using Shared.Json;
 using Shared.Observability;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
@@ -172,6 +173,8 @@ public static class ServiceCollectionExtensions
                      .WithScopedLifetime());
 
         services
+            .Decorate(typeof(ICommandHandler<UpdateOrder, UpdateOrderResult>), 
+                typeof(CacheInvalidatingCommandHandler<UpdateOrder, UpdateOrderResult>))
             .Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>))
             .Decorate(typeof(ICommandHandler<,>), typeof(TracingCommandHandler<,>));
 
@@ -182,7 +185,8 @@ public static class ServiceCollectionExtensions
                      .WithScopedLifetime());
 
         services
-            .Decorate(typeof(IQueryHandler<GetOrder, GetOrderResult>), typeof(CachingQueryHandler<GetOrder, GetOrderResult>)) 
+            .Decorate(typeof(IQueryHandler<GetOrder, GetOrderResult>), 
+                typeof(CachingQueryHandler<GetOrder, GetOrderResult>)) 
             .Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>))
             .Decorate(typeof(IQueryHandler<,>), typeof(TracingQueryHandler<,>));
 

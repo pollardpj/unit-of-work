@@ -1,7 +1,7 @@
-﻿using Shared.CQRS;
+﻿using Shared.Observability;
 using Shared.Utils;
 
-namespace Shared.Observability;
+namespace Shared.CQRS.Decorators;
 
 public class TracingQueryHandler<TQuery, TResult>(
     IQueryHandler<TQuery, TResult> _decorated) : IQueryHandler<TQuery, TResult>

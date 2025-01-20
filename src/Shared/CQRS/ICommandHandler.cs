@@ -9,3 +9,8 @@ public interface ICommandHandler<in TCommand, TResult>
 {
     ValueTask<TResult> ExecuteAsync(TCommand command, CancellationToken token = default);
 }
+
+public interface ICacheInvalidatingCommand
+{
+    string CacheKey { get; }
+}

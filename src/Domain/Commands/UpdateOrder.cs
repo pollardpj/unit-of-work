@@ -1,10 +1,13 @@
-﻿namespace Domain.Commands;
+﻿using Shared.CQRS;
 
-public class UpdateOrder
+namespace Domain.Commands;
+
+public class UpdateOrder : ICacheInvalidatingCommand
 {
     public Guid Id { get; set; }
     public required string ProductName { get; init; }
     public required byte[] RowVersion { get; init; }
+    public string CacheKey => $"order-{Id}";
 }
 
 public class UpdateOrderResult

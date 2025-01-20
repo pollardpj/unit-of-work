@@ -1,30 +1,32 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
-using Shared.CQRS;
 using Shared.Json;
-using Shared.Observability;
 using Shared.Utils;
 
-namespace Shared.Caching;
+namespace Shared.CQRS.Decorators;
 
 public class CachingQueryHandler<TQuery, TResult>(
     IQueryHandler<TQuery, TResult> _decorated,
     HybridCache _cache,
-    ILogger<LoggingQueryHandler<TQuery, TResult>> _logger) : IQueryHandler<TQuery, TResult>
+    ILogger<CachingQueryHandler<TQuery, TResult>> _logger) : IQueryHandler<TQuery, TResult>
     where TQuery : IQuery<TResult>
 {
     public async ValueTask<TResult> ExecuteAsync(TQuery query, CancellationToken token = default)
     {
-        var queryAsJson = JsonSerializer.Serialize(query, JsonHelpers.DefaultOptions);
-        var queryAsHash = HashUtils.GetHash(queryAsJson);
+        if (query is not ICacheableQuery<TResult> cacheableQuery)
+        {
+            return await _decorated.ExecuteAsync(query, token);
+        }
+        
+        var queryHandlerName = TypeUtils.GetUnderlyingTypeName(_decorated.GetType());
+        var queryAsJson = JsonSerializer.Serialize(cacheableQuery, JsonHelpers.DefaultOptions);
             
         var result = await _cache.GetOrCreateAsync(
-            $"order-{queryAsHash}",
+            cacheableQuery.CacheKey,
             async cancellationToken =>
             {
-                _logger.LogDebug("Cache miss on {QueryHandler} with {Query}",
-                     TypeUtils.GetUnderlyingTypeName(_decorated.GetType()), queryAsJson);
+                _logger.LogDebug("Cache miss on {QueryHandler} with {Query}", queryHandlerName, queryAsJson);
                 
                 return await _decorated.ExecuteAsync(query, cancellationToken);
             },
