@@ -44,7 +44,7 @@ public class LoggingCommandHandler<TCommand, TResult>(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception caught on {CommandHandler}", _decorated.GetType().Name);
+            _logger.LogError(ex, "Exception caught on {CommandHandler}", TypeUtils.GetInnermostDecoratedName(this));
             throw;
         }
     }

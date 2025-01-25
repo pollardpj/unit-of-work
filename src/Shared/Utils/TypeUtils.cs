@@ -13,16 +13,9 @@ public static class TypeUtils
         {
             object value = decorator;
 
-            while (value is IDecorator currentDecorator)
+            while (value is IDecorator { Decorated: not null } currentDecorator)
             {
-                var decorated = currentDecorator.Decorated;
-
-                if (decorated == null)
-                {
-                    return value.GetType().Name;
-                }
-
-                value = decorated;
+                value = currentDecorator.Decorated;
             }
 
             return value.GetType().Name;
