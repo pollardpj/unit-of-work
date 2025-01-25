@@ -1,10 +1,10 @@
 ﻿namespace Shared.Repository;
 
-public interface IRepository<T> where T : class, IEntity
+public interface IRepository<T, in TId> where T : class, IEntity<TId>
 {
     IQueryable<T> GetIQueryable();
     ValueTask<List<T>> GetAllAsync();
-    ValueTask<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    ValueTask<T> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
     void SetOriginalRowVersion(T entity, byte[] rowVersion);
     void Add(T entity);
     void Update(T entity);

@@ -3,7 +3,7 @@ using Shared.Repository;
 
 namespace Domain.Entities;
 
-public class OrderEvent : IEntity
+public class OrderEvent : IEntity<Guid>
 {
     public Guid Id { get; init; }
     public OrderEventType Type { get; init; }

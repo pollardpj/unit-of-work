@@ -6,12 +6,14 @@ namespace Shared.CQRS.Decorators;
 
 public class LoggingCommandHandler<TCommand>(
 ICommandHandler<TCommand> _decorated,
-ILogger<LoggingCommandHandler<TCommand>> _logger) : ICommandHandler<TCommand>
+ILogger<LoggingCommandHandler<TCommand>> _logger) : ICommandHandler<TCommand>, IDecorator
 {
+    public object Decorated => _decorated;
+
     public async ValueTask ExecuteAsync(TCommand command, CancellationToken token = default)
     {
         _logger.LogDebug("Entered {CommandHandler} with {Command}",
-            TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
+            TypeUtils.GetInnermostDecoratedName(this),
             JsonSerializer.Serialize(command, JsonHelpers.DefaultOptions));
 
         await _decorated.ExecuteAsync(command, token);
@@ -20,12 +22,14 @@ ILogger<LoggingCommandHandler<TCommand>> _logger) : ICommandHandler<TCommand>
 
 public class LoggingCommandHandler<TCommand, TResult>(
     ICommandHandler<TCommand, TResult> _decorated,
-    ILogger<LoggingCommandHandler<TCommand, TResult>> _logger) : ICommandHandler<TCommand, TResult>
+    ILogger<LoggingCommandHandler<TCommand, TResult>> _logger) : ICommandHandler<TCommand, TResult>, IDecorator
 {
+    public object Decorated => _decorated;
+
     public async ValueTask<TResult> ExecuteAsync(TCommand command, CancellationToken token = default)
     {
         _logger.LogDebug("Entered {CommandHandler} with {Command}", 
-            TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
+            TypeUtils.GetInnermostDecoratedName(this),
             JsonSerializer.Serialize(command, JsonHelpers.DefaultOptions));
 
         try
@@ -33,7 +37,7 @@ public class LoggingCommandHandler<TCommand, TResult>(
             var result = await _decorated.ExecuteAsync(command, token);
 
             _logger.LogDebug("Exited {CommandHandler} with {Result}",
-                TypeUtils.GetUnderlyingTypeName(_decorated.GetType()),
+                TypeUtils.GetInnermostDecoratedName(this),
                 JsonSerializer.Serialize(result, JsonHelpers.DefaultOptions));
 
             return result;

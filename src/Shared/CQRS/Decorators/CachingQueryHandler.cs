@@ -8,9 +8,11 @@ namespace Shared.CQRS.Decorators;
 public class CachingQueryHandler<TQuery, TResult>(
     IQueryHandler<TQuery, TResult> _decorated,
     HybridCache _cache,
-    ILogger<CachingQueryHandler<TQuery, TResult>> _logger) : IQueryHandler<TQuery, TResult>
+    ILogger<CachingQueryHandler<TQuery, TResult>> _logger) : IQueryHandler<TQuery, TResult>, IDecorator
     where TQuery : IQuery<TResult>
 {
+    public object Decorated => _decorated;
+
     public async ValueTask<TResult> ExecuteAsync(TQuery query, CancellationToken token = default)
     {
         if (query is not ICacheableQuery<TResult> cacheableQuery)
@@ -18,7 +20,7 @@ public class CachingQueryHandler<TQuery, TResult>(
             return await _decorated.ExecuteAsync(query, token);
         }
         
-        var queryHandlerName = TypeUtils.GetUnderlyingTypeName(_decorated.GetType());
+        var queryHandlerName = TypeUtils.GetInnermostDecoratedName(this);
         var queryAsJson = JsonSerializer.Serialize(cacheableQuery, JsonHelpers.DefaultOptions);
             
         var result = await _cache.GetOrCreateAsync(

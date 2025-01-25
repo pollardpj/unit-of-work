@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Shared.CQRS.Decorators;
 
 namespace Shared.Utils;
 
@@ -6,17 +7,25 @@ public static class TypeUtils
 {
     private static readonly ConcurrentDictionary<Type, string> _typeNameCache = new();
 
-    public static string GetUnderlyingTypeName(Type type)
+    public static string GetInnermostDecoratedName(IDecorator decorator)
     {
-        return _typeNameCache.GetOrAdd(type, t =>
+        return _typeNameCache.GetOrAdd(decorator.GetType(), _ =>
         {
-            while (t.IsGenericType)
+            object value = decorator;
+
+            while (value is IDecorator currentDecorator)
             {
-                var genericArgs = t.GetGenericArguments();
-                if (genericArgs.Length == 0) break;
-                t = genericArgs[0];
+                var decorated = currentDecorator.Decorated;
+
+                if (decorated == null)
+                {
+                    return value.GetType().Name;
+                }
+
+                value = decorated;
             }
-            return t.Name;
+
+            return value.GetType().Name;
         });
     }
-} 
+}

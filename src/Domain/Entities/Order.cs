@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class Order : IEntity
+public class Order : IEntity<Guid>
 {
     public Guid Id { get; init; }
     public string ProductName { get; set; }

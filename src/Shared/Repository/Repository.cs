@@ -2,7 +2,7 @@
 
 namespace Shared.Repository;
 
-public abstract class Repository<T> : IRepository<T> where T : class, IEntity
+public abstract class Repository<T, TId> : IRepository<T, TId> where T : class, IEntity<TId>
 {
     private readonly DbContext _context;
     private readonly DbSet<T> _dbSet;
@@ -23,7 +23,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IEntity
         return await _dbSet.ToListAsync();
     }
 
-    public async ValueTask<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async ValueTask<T> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync([id], cancellationToken);
     }

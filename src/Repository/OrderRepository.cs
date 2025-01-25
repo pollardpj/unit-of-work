@@ -7,7 +7,7 @@ using Shared.Repository;
 namespace Repository;
 
 public class OrderRepository(MyAppContext _context) 
-    : Repository<Order>(_context), IOrderRepository
+    : Repository<Order, Guid>(_context), IOrderRepository
 {
     public async ValueTask<Order> GetOrderWithEvents(
         Guid id, CancellationToken token = default)

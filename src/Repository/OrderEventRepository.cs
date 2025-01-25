@@ -7,7 +7,7 @@ using Shared.Repository;
 namespace Repository;
 
 public class OrderEventRepository(MyAppContext _context) 
-    : Repository<OrderEvent>(_context), IOrderEventRepository
+    : Repository<OrderEvent, Guid>(_context), IOrderEventRepository
 {
     public async ValueTask<IEnumerable<OrderEvent>> GetPendingEvents(
         Guid orderId, CancellationToken token = default)

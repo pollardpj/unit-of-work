@@ -3,7 +3,7 @@ using Shared.Repository;
 
 namespace Domain.UnitOfWork;
 
-public interface IOrderRepository : IRepository<Order>
+public interface IOrderRepository : IRepository<Order, Guid>
 {
     ValueTask<Order> GetOrderWithEvents(
         Guid id, CancellationToken token = default);
